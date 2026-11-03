@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Etiqueta de estado de error/rechazo -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/danger_container" />
+    <corners android:radius="@dimen/radius_sm" />
+</shape>

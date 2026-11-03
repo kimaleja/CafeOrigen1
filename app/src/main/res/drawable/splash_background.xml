@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Fondo del splash: gradiente vertical en tonos de café -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="@color/cafe_900"
+        android:centerColor="@color/cafe_800"
+        android:endColor="@color/cafe_700"
+        android:type="linear" />
+</shape>
