@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Splash: marca sobre gradiente café (tema Theme.CafeOrigen.Splash) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/spacing_32">
+
+    <ImageView
+        android:id="@+id/splash_logo_image"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_logo_cafeorigen" />
+
+    <TextView
+        style="@style/TextAppearance.CafeOrigen.Display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_16"
+        android:text="@string/app_name"
+        android:textColor="@color/gold_container" />
+
+    <TextView
+        style="@style/TextAppearance.CafeOrigen.Subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_4"
+        android:gravity="center"
+        android:text="@string/brand_tagline_short"
+        android:textColor="@color/text_on_dark_soft" />
+
+    <ProgressBar
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="@dimen/spacing_40"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/accent_gold" />
+
+    <TextView
+        android:id="@+id/splash_status_text"
+        style="@style/TextAppearance.CafeOrigen.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_12"
+        android:text="@string/splash_status_label"
+        android:textColor="@color/cafe_300" />
+
+</LinearLayout>
