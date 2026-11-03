@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Ítem del carrito de compras (C4) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CafeOrigen.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_12"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_14">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/shape_icon_badge">
+
+            <ImageView
+                android:id="@+id/cart_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/vendor_product_image_cd"
+                android:padding="@dimen/spacing_8"
+                android:src="@drawable/ic_storefront"
+                app:tint="@color/cafe_700" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_12"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cart_name_text"
+                style="@style/TextAppearance.CafeOrigen.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/cart_unit_price_text"
+                style="@style/TextAppearance.CafeOrigen.Subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cart_subtotal_text"
+            style="@style/TextAppearance.CafeOrigen.Price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_12"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.CafeOrigen.Card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_4">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/cart_minus_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/buyer_qty_minus_cd"
+                    android:src="@drawable/ic_remove"
+                    app:tint="@color/cafe_700" />
+
+                <TextView
+                    android:id="@+id/cart_qty_text"
+                    style="@style/TextAppearance.CafeOrigen.Title"
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" />
+
+                <ImageButton
+                    android:id="@+id/cart_plus_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/buyer_qty_plus_cd"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/cafe_700" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/cart_remove_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/buyer_cart_remove_cd"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/danger" />
+    </LinearLayout>
+
+</LinearLayout>

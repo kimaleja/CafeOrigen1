@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Historial de compras del Comprador (C6).
+  Chips por estado y listado de pedidos propios (buyerId).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/buyer_orders_filter_chips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_16"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/spacing_16"
+        app:selectionRequired="true"
+        app:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_border_all"
+            style="@style/Widget.CafeOrigen.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:checked="true"
+            android:text="@string/chip_all" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_border_wait"
+            style="@style/Widget.CafeOrigen.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/chip_order_wait" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_border_confirmed"
+            style="@style/Widget.CafeOrigen.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/chip_order_confirmed" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_border_dispatched"
+            style="@style/Widget.CafeOrigen.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/chip_order_dispatched" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_border_delivered"
+            style="@style/Widget.CafeOrigen.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/chip_order_delivered" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_border_canceled"
+            style="@style/Widget.CafeOrigen.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/chip_order_canceled" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <ProgressBar
+        android:id="@+id/buyer_orders_progress"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_32"
+        android:indeterminateTint="@color/accent_gold"
+        android:visibility="gone" />
+
+    <com.cafeorigen.core.ui.EmptyStateView
+        android:id="@+id/buyer_orders_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_24"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/buyer_orders_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/spacing_16"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/spacing_12"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/spacing_32" />
+
+</LinearLayout>

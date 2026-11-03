@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Pasarela de pagos del Comprador (C5).
+  Resumen de compra, form de entrega y métodos de pago DEMO (sin datos
+  bancarios reales ni proveedores externos). Tras confirmar muestra éxito.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/checkout_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/spacing_24"
+            android:paddingEnd="@dimen/spacing_24"
+            android:paddingBottom="@dimen/spacing_24">
+
+            <com.cafeorigen.core.ui.RowItemView
+                android:id="@+id/checkout_back_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                app:rowIcon="@drawable/ic_arrow_back"
+                app:rowShowChevron="false"
+                app:rowSubtitle=""
+                app:rowTitle="@string/vendor_order_detail_title" />
+
+            <!-- Resumen de la compra -->
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_16"
+                android:text="@string/buyer_checkout_summary_label" />
+
+            <LinearLayout
+                android:id="@+id/checkout_summary_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.CafeOrigen.Title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/buyer_cart_total_label" />
+
+                <TextView
+                    android:id="@+id/checkout_total_text"
+                    style="@style/TextAppearance.CafeOrigen.Price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Formulario de entrega -->
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/buyer_delivery_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/checkout_name_input"
+                style="@style/Widget.CafeOrigen.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:hint="@string/buyer_hint_recipient"
+                app:startIconDrawable="@drawable/ic_person">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/checkout_name_edit"
+                    style="@style/Widget.CafeOrigen.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/size_field_height"
+                    android:inputType="textPersonName|textCapWords" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/checkout_phone_input"
+                style="@style/Widget.CafeOrigen.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:hint="@string/hint_phone"
+                app:startIconDrawable="@drawable/ic_smartphone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/checkout_phone_edit"
+                    style="@style/Widget.CafeOrigen.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/size_field_height"
+                    android:inputType="phone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/checkout_address_input"
+                style="@style/Widget.CafeOrigen.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:hint="@string/buyer_hint_address"
+                app:startIconDrawable="@drawable/ic_location">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/checkout_address_edit"
+                    style="@style/Widget.CafeOrigen.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/size_field_height"
+                    android:inputType="text|textCapWords" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Métodos de pago demo -->
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/buyer_payment_label" />
+
+            <RadioGroup
+                android:id="@+id/checkout_payment_radios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radio_payment_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:drawableStart="@drawable/ic_credit_card"
+                    android:drawablePadding="@dimen/spacing_12"
+                    android:drawableTint="@color/cafe_600"
+                    android:paddingStart="@dimen/spacing_8"
+                    android:paddingEnd="@dimen/spacing_8"
+                    android:paddingTop="@dimen/spacing_4"
+                    android:paddingBottom="@dimen/spacing_4"
+                    android:textAppearance="@style/TextAppearance.CafeOrigen.Body"
+                    android:text="@string/buyer_pay_card_demo" />
+
+                <RadioButton
+                    android:id="@+id/radio_payment_pse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_account_balance"
+                    android:drawablePadding="@dimen/spacing_12"
+                    android:drawableTint="@color/cafe_600"
+                    android:paddingStart="@dimen/spacing_8"
+                    android:paddingEnd="@dimen/spacing_8"
+                    android:paddingTop="@dimen/spacing_4"
+                    android:paddingBottom="@dimen/spacing_4"
+                    android:textAppearance="@style/TextAppearance.CafeOrigen.Body"
+                    android:text="@string/buyer_pay_pse_demo" />
+
+                <RadioButton
+                    android:id="@+id/radio_payment_cash"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_check_circle"
+                    android:drawablePadding="@dimen/spacing_12"
+                    android:drawableTint="@color/cafe_600"
+                    android:paddingStart="@dimen/spacing_8"
+                    android:paddingEnd="@dimen/spacing_8"
+                    android:paddingTop="@dimen/spacing_4"
+                    android:paddingBottom="@dimen/spacing_4"
+                    android:textAppearance="@style/TextAppearance.CafeOrigen.Body"
+                    android:text="@string/buyer_pay_cash_demo" />
+            </RadioGroup>
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:text="@string/buyer_pay_note" />
+
+            <ProgressBar
+                android:id="@+id/checkout_progress"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/spacing_16"
+                android:indeterminateTint="@color/accent_gold"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/checkout_confirm_button"
+                style="@style/Widget.CafeOrigen.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/buyer_confirm_order" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Pantalla de confirmación (réplica del flujo de compra) -->
+    <LinearLayout
+        android:id="@+id/checkout_success_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/surface"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_24"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_check_circle"
+            app:tint="@color/success" />
+
+        <TextView
+            android:id="@+id/checkout_success_title_text"
+            style="@style/TextAppearance.CafeOrigen.Display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_16"
+            android:gravity="center"
+            android:text="@string/buyer_success_title" />
+
+        <TextView
+            android:id="@+id/checkout_success_message_text"
+            style="@style/TextAppearance.CafeOrigen.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/checkout_success_orders_text"
+            style="@style/TextAppearance.CafeOrigen.Subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:gravity="center" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/checkout_success_orders_button"
+            style="@style/Widget.CafeOrigen.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_32"
+            android:text="@string/buyer_success_see_orders" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/checkout_success_keep_button"
+            style="@style/Widget.CafeOrigen.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:text="@string/buyer_success_keep_shopping" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Perfil del Comprador (C6) -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_24">
+
+        <TextView
+            android:id="@+id/buyer_profile_avatar"
+            style="@style/TextAppearance.CafeOrigen.Display"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:background="@drawable/shape_avatar"
+            android:gravity="center"
+            android:text="CR" />
+
+        <TextView
+            android:id="@+id/buyer_profile_name_text"
+            style="@style/TextAppearance.CafeOrigen.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12" />
+
+        <TextView
+            android:id="@+id/buyer_profile_email_text"
+            style="@style/TextAppearance.CafeOrigen.Subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_4" />
+
+        <TextView
+            android:id="@+id/buyer_profile_role_badge"
+            style="@style/TextAppearance.CafeOrigen.Badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:background="@drawable/bg_tag_info"
+            android:paddingStart="@dimen/spacing_8"
+            android:paddingEnd="@dimen/spacing_8"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="@string/role_label_comprador"
+            android:textColor="@color/info" />
+
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/buyer_profile_history_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            app:rowIcon="@drawable/ic_receipt"
+            app:rowShowChevron="true"
+            app:rowSubtitle="@string/buyer_history_subtitle"
+            app:rowTitle="@string/buyer_history_title" />
+
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/buyer_profile_cart_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:rowIcon="@drawable/ic_shopping_cart"
+            app:rowShowChevron="true"
+            app:rowSubtitle="@string/buyer_cart_row_subtitle"
+            app:rowTitle="@string/tab_carrito" />
+
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/buyer_profile_logout_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:rowIcon="@drawable/ic_logout"
+            app:rowShowChevron="false"
+            app:rowSubtitle=""
+            app:rowTitle="@string/action_logout" />
+
+        <TextView
+            android:id="@+id/buyer_profile_version_text"
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/app_version_label" />
+
+    </LinearLayout>
+
+</ScrollView>

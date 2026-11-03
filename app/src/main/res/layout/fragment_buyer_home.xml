@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Inicio del Comprador (C1).
+  Banner de marca, accesos rápidos por categoría y cafés destacados.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16">
+
+        <TextView
+            android:id="@+id/buyer_greeting_text"
+            style="@style/TextAppearance.CafeOrigen.Display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/buyer_hello" />
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_4"
+            android:text="@string/brand_tagline" />
+
+        <!-- Banner de marca -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.CafeOrigen.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_16">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_16">
+
+                <FrameLayout
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/shape_icon_badge">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:importantForAccessibility="no"
+                        android:padding="@dimen/spacing_12"
+                        android:src="@drawable/ic_agriculture"
+                        app:tint="@color/cafe_700" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_12"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextAppearance.CafeOrigen.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buyer_banner_title" />
+
+                    <TextView
+                        style="@style/TextAppearance.CafeOrigen.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buyer_banner_subtitle" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Accesos por categoría (abren el catálogo prefiltrado) -->
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/buyer_section_categories" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/buyer_category_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_open_cafe_grano"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:text="@string/category_cafe_grano" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_open_cafe_molido"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:text="@string/category_cafe_molido" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_open_cafe_verde"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:text="@string/category_cafe_verde" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_open_accesorios"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="false"
+                android:text="@string/category_accesorios" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Featured -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/buyer_section_featured" />
+
+            <TextView
+                android:id="@+id/buyer_see_all_text"
+                style="@style/TextAppearance.CafeOrigen.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/spacing_4"
+                android:text="@string/buyer_see_all"
+                android:textColor="@color/cafe_600" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/buyer_featured_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:nestedScrollingEnabled="false" />
+
+        <com.cafeorigen.core.ui.EmptyStateView
+            android:id="@+id/buyer_featured_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:visibility="gone" />
+
+        <!-- Accesos al historial y carrito -->
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/buyer_orders_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            app:rowIcon="@drawable/ic_receipt"
+            app:rowShowChevron="true"
+            app:rowSubtitle="@string/buyer_orders_row_subtitle"
+            app:rowTitle="@string/vendor_orders_title" />
+
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/buyer_cart_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:rowIcon="@drawable/ic_shopping_cart"
+            app:rowShowChevron="true"
+            app:rowSubtitle="@string/buyer_cart_row_subtitle"
+            app:rowTitle="@string/tab_carrito" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_16" />
+    </LinearLayout>
+
+</ScrollView>
