@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Reporte de ventas (A7). Periodo (chips), gráfico, KPIs,
+  ranking de productos y exportación CSV.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/report_period_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_report_7"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/report_period_7" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_report_30"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:checked="true"
+                android:text="@string/report_period_30" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_report_365"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/report_period_365" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <ProgressBar
+            android:id="@+id/report_progress"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:indeterminateTint="@color/accent_gold"
+            android:visibility="gone" />
+
+        <com.cafeorigen.core.ui.EmptyStateView
+            android:id="@+id/report_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/report_content_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:orientation="horizontal">
+
+                <com.cafeorigen.core.ui.KpiCardView
+                    android:id="@+id/report_kpi_revenue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_12"
+                    android:layout_weight="1"
+                    app:kpiAccentColor="@color/accent_gold"
+                    app:kpiIcon="@drawable/ic_bar_chart"
+                    app:kpiLabel="@string/report_kpi_revenue"
+                    app:kpiValue="…" />
+
+                <com.cafeorigen.core.ui.KpiCardView
+                    android:id="@+id/report_kpi_units"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:kpiAccentColor="@color/cafe_600"
+                    app:kpiIcon="@drawable/ic_shopping_cart"
+                    app:kpiLabel="@string/report_kpi_units"
+                    app:kpiValue="…" />
+            </LinearLayout>
+
+            <com.cafeorigen.core.ui.BarChartView
+                android:id="@+id/report_chart_view"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="@dimen/spacing_16"
+                app:barColor="@color/cafe_600"
+                app:barTrackColor="@color/cafe_100" />
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/report_top_title" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/report_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:nestedScrollingEnabled="false" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/report_export_button"
+                style="@style/Widget.CafeOrigen.Button.Gold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_16"
+                android:text="@string/report_export_csv"
+                app:icon="@drawable/ic_file_download" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

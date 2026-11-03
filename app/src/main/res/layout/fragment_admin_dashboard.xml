@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Dashboard del Administrador (A1).
+  KPIs, gráfico de ventas, alertas operativas y accesos rápidos.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_16">
+
+            <TextView
+                android:id="@+id/dash_greeting_text"
+                style="@style/TextAppearance.CafeOrigen.Display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_dashboard_title" />
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:text="@string/dash_section_kpi" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:orientation="horizontal">
+
+                <com.cafeorigen.core.ui.KpiCardView
+                    android:id="@+id/dash_kpi_revenue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_12"
+                    android:layout_weight="1"
+                    app:kpiAccentColor="@color/accent_gold"
+                    app:kpiIcon="@drawable/ic_bar_chart"
+                    app:kpiLabel="@string/dash_kpi_revenue_label"
+                    app:kpiValue="…" />
+
+                <com.cafeorigen.core.ui.KpiCardView
+                    android:id="@+id/dash_kpi_users"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/spacing_12"
+                    android:layout_weight="1"
+                    app:kpiAccentColor="@color/cafe_600"
+                    app:kpiIcon="@drawable/ic_group"
+                    app:kpiLabel="@string/dash_kpi_users_label"
+                    app:kpiValue="…" />
+
+                <com.cafeorigen.core.ui.KpiCardView
+                    android:id="@+id/dash_kpi_products"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:kpiAccentColor="@color/success"
+                    app:kpiIcon="@drawable/ic_inventory"
+                    app:kpiLabel="@string/dash_kpi_products_label"
+                    app:kpiValue="…" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/dash_chart_title" />
+
+            <com.cafeorigen.core.ui.BarChartView
+                android:id="@+id/dash_chart_view"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="@dimen/spacing_12"
+                app:barColor="@color/accent_gold"
+                app:barTrackColor="@color/cafe_100" />
+
+            <TextView
+                android:id="@+id/dash_chart_labels_text"
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_4"
+                android:gravity="center"
+                android:text="L  M  X  J  V  S  D" />
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/dash_section_alerts" />
+
+            <com.cafeorigen.core.ui.EmptyStateView
+                android:id="@+id/dash_alerts_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/dash_alerts_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                android:orientation="vertical" />
+
+            <TextView
+                style="@style/TextAppearance.CafeOrigen.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:text="@string/dash_section_easy" />
+
+            <com.cafeorigen.core.ui.RowItemView
+                android:id="@+id/dash_row_users"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                app:rowIcon="@drawable/ic_group"
+                app:rowShowChevron="true"
+                app:rowSubtitle="@string/dash_row_users_subtitle"
+                app:rowTitle="@string/tab_usuarios" />
+
+            <com.cafeorigen.core.ui.RowItemView
+                android:id="@+id/dash_row_products"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                app:rowIcon="@drawable/ic_inventory"
+                app:rowShowChevron="true"
+                app:rowSubtitle="@string/dash_row_products_subtitle"
+                app:rowTitle="@string/tab_productos" />
+
+            <com.cafeorigen.core.ui.RowItemView
+                android:id="@+id/dash_row_report"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_12"
+                app:rowIcon="@drawable/ic_assignment"
+                app:rowShowChevron="true"
+                app:rowSubtitle="@string/dash_row_report_subtitle"
+                app:rowTitle="@string/admin_report_title" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_16" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
