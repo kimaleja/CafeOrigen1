@@ -1,0 +1,4 @@
+// Proyecto: CafeOrigen — Tienda virtual Android de café de especialidad colombiano
+plugins {
+    id 'com.android.application' version '8.5.2' apply false
+}

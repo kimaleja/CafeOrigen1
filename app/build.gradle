@@ -1,0 +1,40 @@
+// Módulo de aplicación: CafeOrigen
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.cafeorigen'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.cafeorigen"
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Marco base de UI (Material Components con componentes personalizados del sistema visual)
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    // Arquitectura MVVM: ViewModel + LiveData (capa Controlador / estado observable)
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.4'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.4'
+    // Autenticación biométrica oficial de AndroidX (BiometricPrompt)
+    implementation 'androidx.biometric:biometric:1.1.0'
+}
