@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Borde del campo de texto: café al enfocar, outline en reposo -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:color="@color/cafe_600" android:state_focused="true" />
+    <item android:color="@color/cafe_400" android:state_hovered="true" />
+    <item android:color="@color/outline" />
+
+</selector>

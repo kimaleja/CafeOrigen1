@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Temas de la aplicación (Material 3 personalizado) -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema base: identidad CaféOrigen (paleta café, tipografía Poppins) -->
+    <style name="Theme.CafeOrigen" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorPrimaryContainer">@color/cafe_200</item>
+        <item name="colorOnPrimaryContainer">@color/cafe_900</item>
+        <item name="colorSecondary">@color/accent_gold</item>
+        <item name="colorOnSecondary">@color/cafe_900</item>
+        <item name="colorSecondaryContainer">@color/gold_container</item>
+        <item name="colorOnSecondaryContainer">@color/cafe_900</item>
+        <item name="colorError">@color/color_error</item>
+        <item name="colorOnError">@color/text_on_dark</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/color_on_surface_variant</item>
+        <item name="colorOutline">@color/color_outline</item>
+        <item name="android:colorBackground">@color/color_background</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="fontFamily">@font/poppins</item>
+        <!-- Componentes por defecto con identidad propia -->
+        <item name="materialButtonStyle">@style/Widget.CafeOrigen.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.CafeOrigen.TextInputLayout</item>
+        <item name="bottomNavigationStyle">@style/Widget.CafeOrigen.BottomNav</item>
+        <item name="materialCardViewStyle">@style/Widget.CafeOrigen.Card</item>
+        <!-- Barra de estado en tono café oscuro -->
+        <item name="android:statusBarColor">@color/cafe_900</item>
+        <item name="android:navigationBarColor">@color/cafe_700</item>
+        <item name="android:windowBackground">@color/color_background</item>
+    </style>
+
+    <!-- Tema de splash: sin barra translucentes sobre el gradiente de marca -->
+    <style name="Theme.CafeOrigen.Splash">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/cafe_900</item>
+        <item name="android:navigationBarColor">@color/cafe_900</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+</resources>

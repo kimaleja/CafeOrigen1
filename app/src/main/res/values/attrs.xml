@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Atributos personalizados del sistema visual.
+  Permite parametrizar los componentes reutilizables (KPI card, gráfico de
+  barras, filas) desde los layouts XML.
+-->
+<resources>
+
+    <!-- KPI Card (view_kpi_card) -->
+    <declare-styleable name="KpiCard">
+        <attr name="kpiValue" format="string" localization="suggested" />
+        <attr name="kpiLabel" format="string" localization="suggested" />
+        <attr name="kpiIcon" format="reference" />
+        <attr name="kpiAccentColor" format="color|reference" />
+    </declare-styleable>
+
+    <!-- Row Item de ajustes / entradas de lista (view_row_item) -->
+    <declare-styleable name="RowItem">
+        <attr name="rowIcon" format="reference" />
+        <attr name="rowTitle" format="string" localization="suggested" />
+        <attr name="rowSubtitle" format="string" localization="suggested" />
+        <attr name="rowShowChevron" format="boolean" />
+    </declare-styleable>
+
+    <!-- Gráfico de barras propio (BarChartView) -->
+    <declare-styleable name="BarChart">
+        <attr name="barColor" format="color|reference" />
+        <attr name="barTrackColor" format="color|reference" />
+    </declare-styleable>
+
+</resources>

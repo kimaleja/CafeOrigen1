@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Sistema visual de componentes
+  Tipografía, botones, campos, tarjetas, app bar y navegación con identidad
+  propia (nada de estilos predeterminados sin personalizar).
+-->
+<resources xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ================================================== TIPOGRAFÍA -->
+
+    <!-- Título de pantallas (26sp semibold) -->
+    <style name="TextAppearance.CafeOrigen.Display" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_display</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- Encabezados de sección (18sp semibold) -->
+    <style name="TextAppearance.CafeOrigen.Headline" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_headline</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- Títulos de tarjetas / listas (15sp semibold) -->
+    <style name="TextAppearance.CafeOrigen.Title" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- Cuerpo principal (14sp regular) -->
+    <style name="TextAppearance.CafeOrigen.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!-- Subtítulos / metadatos (12sp medium, gris) -->
+    <style name="TextAppearance.CafeOrigen.Subtitle" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_subtitle</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Leyendas (11sp regular) -->
+    <style name="TextAppearance.CafeOrigen.Caption" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_micro</item>
+        <item name="android:textColor">@color/text_hint</item>
+    </style>
+
+    <!-- Precio / valores destacados (16sp bold, café) -->
+    <style name="TextAppearance.CafeOrigen.Price" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_price</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/cafe_700</item>
+    </style>
+
+    <!-- Etiquetas de estados (chips) (10sp semibold) -->
+    <style name="TextAppearance.CafeOrigen.Badge" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_overline</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <!-- Rótulos de navegación inferior (10sp medium) -->
+    <style name="TextAppearance.CafeOrigen.Nav" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_nav_label</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <!-- Botones (13sp semibold, sin mayúsculas forzadas) -->
+    <style name="TextAppearance.CafeOrigen.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <!-- ================================================== BOTONES -->
+
+    <style name="Widget.CafeOrigen.Button" parent="Widget.Material3.Button">
+        <item name="android:textAppearance">@style/TextAppearance.CafeOrigen.Button</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">@dimen/size_button_height</item>
+        <item name="android:paddingTop">@dimen/spacing_12</item>
+        <item name="android:paddingBottom">@dimen/spacing_12</item>
+        <item name="android:paddingStart">@dimen/spacing_20</item>
+        <item name="android:paddingEnd">@dimen/spacing_20</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Primario: café oscuro sobre crema -->
+    <style name="Widget.CafeOrigen.Button.Primary">
+        <item name="android:backgroundTint">@color/cafe_700</item>
+        <item name="android:textColor">@color/text_on_dark</item>
+        <item name="android:elevation">@dimen/elevation_low</item>
+        <item name="iconTint">@color/text_on_dark</item>
+    </style>
+
+    <!-- Dorado: destacados (pagos, suscripción) -->
+    <style name="Widget.CafeOrigen.Button.Gold">
+        <item name="android:backgroundTint">@color/accent_gold</item>
+        <item name="android:textColor">@color/text_on_dark</item>
+        <item name="android:elevation">@dimen/elevation_low</item>
+        <item name="iconTint">@color/text_on_dark</item>
+    </style>
+
+    <!-- Secundario: contorno café sobre blanco -->
+    <style name="Widget.CafeOrigen.Button.Secondary">
+        <item name="android:backgroundTint">@color/surface</item>
+        <item name="android:textColor">@color/cafe_700</item>
+        <item name="strokeColor">@color/cafe_700</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="iconTint">@color/cafe_700</item>
+    </style>
+
+    <!-- Destructivo: rojo para acciones irreversibles -->
+    <style name="Widget.CafeOrigen.Button.Destructive">
+        <item name="android:backgroundTint">@color/danger</item>
+        <item name="android:textColor">@color/text_on_dark</item>
+        <item name="iconTint">@color/text_on_dark</item>
+    </style>
+
+    <!-- Tono suave: etiquetas de estado sobre colores contenedores -->
+    <style name="Widget.CafeOrigen.Button.Destructive.Soft">
+        <item name="android:backgroundTint">@color/danger_container</item>
+        <item name="android:textColor">@color/danger</item>
+    </style>
+
+    <!-- Texto plano (enlaces dentro de pantallas) -->
+    <style name="Widget.CafeOrigen.Button.Inline" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textAppearance">@style/TextAppearance.CafeOrigen.Button</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/cafe_700</item>
+    </style>
+
+    <!-- ================================================== CAMPOS DE TEXTO -->
+
+    <style name="Widget.CafeOrigen.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/selector_box_stroke</item>
+        <item name="hintTextColor">@color/cafe_600</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_md</item>
+        <item name="startIconTint">@color/cafe_500</item>
+        <item name="endIconTint">@color/cafe_500</item>
+        <item name="errorTextColor">@color/danger</item>
+    </style>
+
+    <style name="Widget.CafeOrigen.TextInputEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="android:textAppearance">@style/TextAppearance.CafeOrigen.Body</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:paddingTop">@dimen/spacing_12</item>
+        <item name="android:paddingBottom">@dimen/spacing_12</item>
+    </style>
+
+    <!-- Menú desplegable (selector de rol en formularios) -->
+    <style name="Widget.CafeOrigen.TextInputLayout.ExposedDropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/selector_box_stroke</item>
+        <item name="hintTextColor">@color/cafe_600</item>
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_md</item>
+        <item name="startIconTint">@color/cafe_500</item>
+    </style>
+
+    <!-- ================================================== TARJETAS -->
+
+    <!-- Base: superficie blanca, esquinas redondeadas, sombra suave -->
+    <style name="Widget.CafeOrigen.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardElevation">@dimen/elevation_low</item>
+        <item name="cardCornerRadius">@dimen/radius_card</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="android:elevation">@dimen/elevation_low</item>
+    </style>
+
+    <!-- Tarjeta de producto: borde sutil + esquinas grandes -->
+    <style name="Widget.CafeOrigen.Card.Product">
+        <item name="cardElevation">@dimen/elevation_card</item>
+        <item name="cardCornerRadius">@dimen/radius_lg</item>
+        <item name="strokeColor">@color/outline</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- Tarjeta KPI: compacta, centrada -->
+    <style name="Widget.CafeOrigen.Card.Kpi">
+        <item name="cardElevation">1dp</item>
+        <item name="cardCornerRadius">@dimen/radius_md</item>
+        <item name="android:minHeight">84dp</item>
+    </style>
+
+    <!-- Tarjeta banner (Club de Café): sin sombra, fondo con gradiente -->
+    <style name="Widget.CafeOrigen.Card.Banner">
+        <item name="cardBackgroundColor">@android:color/transparent</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">@dimen/radius_lg</item>
+    </style>
+
+    <!-- ================================================== APP BAR Y NAVEGACIÓN -->
+
+    <style name="Widget.CafeOrigen.Toolbar" parent="">
+        <item name="android:background">@color/cafe_700</item>
+        <item name="titleTextAppearance">@style/TextAppearance.CafeOrigen.Headline</item>
+        <item name="titleTextColor">@color/text_on_dark</item>
+        <item name="subtitleTextColor">@color/text_on_dark_soft</item>
+        <item name="android:elevation">0dp</item>
+        <item name="contentInsetStartWithNavigation">@dimen/spacing_12</item>
+    </style>
+
+    <style name="Widget.CafeOrigen.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@drawable/bg_navbar</item>
+        <item name="itemIconTint">@color/selector_nav_item</item>
+        <item name="itemTextColor">@color/selector_nav_item</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.CafeOrigen.Nav</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.CafeOrigen.Nav</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.CafeOrigen.Nav.ActiveIndicator</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="Widget.CafeOrigen.Nav.ActiveIndicator" parent="">
+        <item name="android:background">@drawable/bg_nav_active</item>
+    </style>
+
+    <!-- ================================================== CHIPS (filtros / estados) -->
+
+    <style name="Widget.CafeOrigen.Chip" parent="Widget.Material3.Chip.Assist">
+        <item name="android:textAppearance">@style/TextAppearance.CafeOrigen.Badge</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="chipBackgroundColor">@color/chip_background</item>
+        <item name="chipStrokeColor">@color/outline</item>
+        <item name="chipStrokeWidth">0.5dp</item>
+        <item name="android:textColor">@color/cafe_900</item>
+        <item name="rippleColor">@color/cafe_200</item>
+    </style>
+
+    <style name="Widget.CafeOrigen.Chip.Regular">
+        <item name="chipBackgroundColor">@color/chip_background</item>
+    </style>
+
+    <!-- ================================================== COMPONENTES SUELTOS -->
+
+    <!-- Barra de búsqueda tipo pill -->
+    <style name="Widget.CafeOrigen.SearchBar" parent="">
+        <item name="android:background">@drawable/shape_search</item>
+        <item name="android:textAppearance">@style/TextAppearance.CafeOrigen.Body</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+    </style>
+
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Componente reutilizable: fila de ajuste / entrada de lista.
+  Atributos del declare-styleable "RowItem" (rowIcon, rowTitle, rowSubtitle,
+  rowShowChevron). La raíz es RowItemView (java/core/ui).
+-->
+<com.cafeorigen.core.ui.RowItemView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/shape_card"
+        android:elevation="@dimen/elevation_low"
+        android:padding="@dimen/spacing_16">
+
+        <FrameLayout
+            android:id="@+id/row_icon_container"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_icon_badge">
+
+            <ImageView
+                android:id="@+id/row_icon_image"
+                android:layout_width="@dimen/size_icon"
+                android:layout_height="@dimen/size_icon"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_location" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_12"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/row_title_text"
+                style="@style/TextAppearance.CafeOrigen.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/demo_row_title" />
+
+            <TextView
+                android:id="@+id/row_subtitle_text"
+                style="@style/TextAppearance.CafeOrigen.Subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@string/demo_row_subtitle" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/row_chevron_image"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_chevron_right"
+            app:tint="@color/text_hint" />
+    </LinearLayout>
+
+</com.cafeorigen.core.ui.RowItemView>

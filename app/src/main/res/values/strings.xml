@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Textos del sistema visual (español de Colombia, RNF-16) -->
+<resources>
+
+    <!-- Marca -->
+    <string name="app_name">CaféOrigen</string>
+    <string name="brand_tagline">Café de especialidad colombiano, directo del productor a tu taza</string>
+    <string name="brand_tagline_short">Directo del productor a tu taza</string>
+    <string name="app_version_label">Versión 1.0.0</string>
+
+    <!-- Splash -->
+    <string name="splash_status_label">Base del sistema visual — en construcción</string>
+
+    <!-- Autenticación -->
+    <string name="login_title">¡Bienvenido de nuevo!</string>
+    <string name="login_subtitle">Ingresa para comprar café de origen</string>
+    <string name="login_hint_email">Correo electrónico</string>
+    <string name="login_hint_password">Contraseña</string>
+    <string name="login_action">Ingresar</string>
+    <string name="login_biometric">Ingresar con huella</string>
+    <string name="login_google">Continuar con Google</string>
+    <string name="login_forgot">¿Olvidaste tu contraseña?</string>
+    <string name="login_no_account">¿No tienes cuenta?</string>
+    <string name="login_register_link">Regístrate</string>
+    <string name="common_or_continue">— o continúa con —</string>
+
+    <!-- Navegación inferior (por rol) -->
+    <string name="tab_inicio">Inicio</string>
+    <string name="tab_catalogo">Catálogo</string>
+    <string name="tab_carrito">Carrito</string>
+    <string name="tab_pedidos">Pedidos</string>
+    <string name="tab_perfil">Perfil</string>
+    <string name="tab_dashboard">Dashboard</string>
+    <string name="tab_usuarios">Usuarios</string>
+    <string name="tab_productos">Productos</string>
+
+    <!-- Toolbar -->
+    <string name="toolbar_notif_cd">Notificaciones</string>
+    <string name="toolbar_cart_cd">Ver carrito</string>
+
+    <!-- Acciones comunes -->
+    <string name="action_search_hint">Buscar café, región o productor…</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_add_to_cart">Agregar al carrito</string>
+    <string name="action_buy_now">Comprar ahora</string>
+    <string name="action_go_to_pay">Ir a pagar</string>
+    <string name="action_logout">Cerrar sesión</string>
+
+    <!-- Componentes de muestra (pantalla del sistema visual) -->
+    <string name="demo_section_kpis">Indicadores (KPI cards)</string>
+    <string name="demo_section_products">Tarjeta de producto (reutilizable)</string>
+    <string name="demo_section_chart">Gráfico de barras (componente propio)</string>
+    <string name="demo_section_buttons">Estilos de botones</string>
+    <string name="demo_section_states">Estado vacío y filas de ajuste</string>
+    <string name="demo_kpi_sales_value">$18,6M</string>
+    <string name="demo_kpi_sales_label">Ventas mes</string>
+    <string name="demo_kpi_users_value">342</string>
+    <string name="demo_kpi_users_label">Usuarios</string>
+    <string name="demo_kpi_orders_value">26</string>
+    <string name="demo_kpi_orders_label">Productos</string>
+    <string name="demo_product_name">Huila · El Mirador</string>
+    <string name="demo_product_meta">Natural · Notas: panela y frutos rojos</string>
+    <string name="demo_product_price">$38.000</string>
+    <string name="demo_product_stock">En stock</string>
+    <string name="demo_product_stock_cd">Disponibilidad: en stock</string>
+    <string name="demo_chart_title">Ventas últimos 7 días</string>
+    <string name="demo_chart_meta">L M X J V S D · pico del sábado</string>
+    <string name="demo_row_title">Mis direcciones (2)</string>
+    <string name="demo_row_subtitle">Ubicaciones guardadas para el envío</string>
+
+    <!-- Estado vacío -->
+    <string name="empty_state_title">Aún no hay nada por aquí</string>
+    <string name="empty_state_message">Cuando aparezca información, se mostrará en esta sección.</string>
+
+    <!-- ================================================== TRANSVERSALES (T1–T6) -->
+
+    <!-- Splash -->
+    <string name="splash_connecting">Preparando tu tienda de café…</string>
+
+    <!-- Login: validaciones -->
+    <string name="login_error_empty_email">Escribe tu correo electrónico.</string>
+    <string name="login_error_invalid_email">El correo no tiene un formato válido.</string>
+    <string name="login_error_empty_password">Escribe tu contraseña.</string>
+    <string name="login_error_short_password">La contraseña debe tener al menos 6 caracteres.</string>
+    <string name="login_invalid_credentials">Correo o contraseña incorrectos. Verifica tus datos.</string>
+    <string name="welcome_logged">Bienvenido, %1$s</string>
+    <string name="session_expired">Tu sesión finalizó. Ingresa de nuevo.</string>
+
+    <!-- Login: biometría oficial de AndroidX -->
+    <string name="biometric_title">Autenticación biométrica</string>
+    <string name="biometric_subtitle">Usa tu huella para entrar a CaféOrigen</string>
+    <string name="biometric_use_pwd">Usar contraseña</string>
+    <string name="biometric_no_session">Primero inicia sesión una vez con tu contraseña para habilitar el ingreso con huella.</string>
+    <string name="biometric_no_enrolled">No hay huella registrada en este dispositivo. Ingresa con tu contraseña y actívala desde tu perfil.</string>
+    <string name="biometric_unsupported">Este dispositivo no soporta biometría. Ingresar con contraseña.</string>
+    <string name="biometric_cancelled">Autenticación biométrica cancelada.</string>
+    <string name="biometric_ok">Huella verificada.</string>
+
+    <!-- Recuperación de contraseña -->
+    <string name="recovery_title">Recuperar contraseña</string>
+    <string name="recovery_subtitle">Te enviaremos un código de verificación a tu correo</string>
+    <string name="recovery_hint_code">Código de 6 dígitos</string>
+    <string name="recovery_hint_new_password">Nueva contraseña</string>
+    <string name="recovery_step2_subtitle">Escribe el código y define tu nueva contraseña</string>
+    <string name="recovery_action_send_code">Enviar código</string>
+    <string name="recovery_action_reset">Restablecer contraseña</string>
+    <string name="recovery_code_sent">Código simulado (sin backend): %1$s</string>
+    <string name="recovery_email_not_found">No encontramos una cuenta con ese correo.</string>
+    <string name="recovery_code_wrong">El código no es correcto. Revisa e intenta de nuevo.</string>
+    <string name="recovery_code_invalid">El código debe tener 6 números.</string>
+    <string name="recovery_success">Contraseña restablecida. Ingresa con tu nueva contraseña.</string>
+    <string name="recovery_back_cd">Volver al login</string>
+
+    <!-- Registro -->
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_subtitle">Compra café de especialidad directo del productor</string>
+    <string name="hint_name">Nombre completo</string>
+    <string name="hint_phone">Teléfono</string>
+    <string name="hint_password_confirm">Confirmar contraseña</string>
+    <string name="register_action">Registrarme</string>
+    <string name="register_have_account">¿Ya tienes cuenta?</string>
+    <string name="register_login_link">Ingresar</string>
+    <string name="register_terms">Acepto los términos, la política de tratamiento de datos y el aviso de privacidad (Ley 1581 de 2012)</string>
+    <string name="register_error_terms">Debes aceptar la política de datos para registrarte.</string>
+    <string name="register_error_name">Escribe tu nombre completo.</string>
+    <string name="register_passwords_mismatch">Las contraseñas no coinciden.</string>
+    <string name="register_existing_email">Ya existe una cuenta con este correo.</string>
+    <string name="register_success">¡Cuenta creada con éxito!</string>
+
+    <!-- Logout y control de acceso por rol -->
+    <string name="logout_confirm_title">Cerrar sesión</string>
+    <string name="logout_confirm_message">¿Seguro que quieres salir de tu cuenta?</string>
+    <string name="logout_confirm_positive">Salir</string>
+    <string name="module_in_progress">Módulo «%1$s» — se implementa en la fase de pantallas por rol.</string>
+    <string name="module_in_progress_placeholder">Función disponible en una fase posterior del desarrollo.</string>
+    <string name="role_label_comprador">Comprador</string>
+    <string name="role_label_vendedor">Vendedor</string>
+    <string name="role_label_admin">Administrador</string>
+
+    <!-- ================================================== ROL ADMINISTRADOR (A1–A7) -->
+
+    <!-- Títulos de pantalla (toolbar) -->
+    <string name="admin_dashboard_title">Dashboard</string>
+    <string name="admin_users_title">Usuarios</string>
+    <string name="admin_products_title">Productos</string>
+    <string name="admin_orders_title">Pedidos</string>
+    <string name="admin_profile_title">Perfil</string>
+    <string name="admin_report_title">Reporte de ventas</string>
+
+    <!-- Dashboard A1 -->
+    <string name="dash_greeting_fmt">Hola, %1$s 👋</string>
+    <string name="dash_section_kpi">Indicadores del mes</string>
+    <string name="dash_kpi_revenue_label">Ventas 30 días</string>
+    <string name="dash_kpi_users_label">Usuarios</string>
+    <string name="dash_kpi_products_label">Productos</string>
+    <string name="dash_section_alerts">Alertas operativas</string>
+    <string name="dash_section_easy">Accesos rápidos</string>
+    <string name="dash_row_users_subtitle">Crear, editar y administrar cuentas</string>
+    <string name="dash_row_products_subtitle">Moderar cafés enviados por los vendedores</string>
+    <string name="dash_row_report_subtitle">Ventas, unidades y exportación CSV</string>
+    <string name="dash_alert_pending_fmt">%1$d café(s) esperan moderación</string>
+    <string name="dash_alert_lowstock_fmt">Stock bajo: %1$d producto(s) activos</string>
+    <string name="dash_alert_inactive_fmt">Hay cuentas inactivas por revisar</string>
+    <string name="dash_chart_title">Ventas últimos 7 días</string>
+    <string name="dash_no_alerts">Sin alertas por ahora. Todo al día ✅</string>
+    <string name="dash_value_cop_fmt">$%1$s</string>
+    <string name="dash_value_millions_fmt">$%1$.1fM</string>
+    <string name="share_csv_title">Compartir reporte CSV</string>
+
+    <!-- Listado de usuarios A2 -->
+    <string name="users_search_hint">Buscar por nombre o correo…</string>
+    <string name="chip_all">Todos</string>
+    <string name="chip_comprador">Compradores</string>
+    <string name="chip_vendedor">Vendedores</string>
+    <string name="chip_admin">Admins</string>
+    <string name="users_empty_title">Sin usuarios</string>
+    <string name="users_empty_msg">Ajusta los filtros o crea una cuenta nueva con el botón +.</string>
+    <string name="users_fab_cd">Crear usuario</string>
+    <string name="users_role_comprador_badge">COMPRADOR</string>
+    <string name="users_role_vendedor_badge">VENDEDOR</string>
+    <string name="users_role_admin_badge">ADMIN</string>
+    <string name="users_state_active">Activo</string>
+    <string name="users_state_inactive">Inactivo</string>
+    <string name="users_menu_edit">Editar usuario</string>
+    <string name="users_menu_delete">Eliminar / desactivar</string>
+    <string name="users_delete_title">Eliminar usuario</string>
+    <string name="users_delete_msg_fmt">¿Desactivar la cuenta de %1$s? Ya no podrá iniciar sesión (borrado lógico).</string>
+    <string name="users_saved_fmt">Usuario guardado: %1$s</string>
+    <string name="users_deleted_fmt">Cuenta desactivada: %1$s</string>
+    <string name="users_email_taken">El correo ya está en uso por otra cuenta.</string>
+
+    <!-- Formulario de usuario A3/A4 (compartido) -->
+    <string name="form_title_create">Crear usuario</string>
+    <string name="form_title_edit">Editar usuario</string>
+    <string name="form_subtitle">Completa los datos de la cuenta</string>
+    <string name="form_hint_role">Rol de la cuenta</string>
+    <string name="form_switch_active">Cuenta activa (permite iniciar sesión)</string>
+    <string name="form_new_password">Contraseña (vacía = sin cambios en edición)</string>
+    <string name="form_error_role">Selecciona un rol.</string>
+    <string name="form_invalid_phone">El teléfono debe tener al menos 7 dígitos.</string>
+    <string name="form_saved_error">No se pudo guardar. Intenta de nuevo.</string>
+
+    <!-- Moderación de productos A6 -->
+    <string name="products_filter_all">Todos</string>
+    <string name="products_filter_pending">Pendientes</string>
+    <string name="products_filter_active">Activos</string>
+    <string name="products_filter_rejected">Rechazados</string>
+    <string name="products_filter_draft">Borradores</string>
+    <string name="products_empty_title">Sin productos</string>
+    <string name="products_empty_msg">No hay cafés en este estado. Cambia de filtro.</string>
+    <string name="product_stock_fmt">Stock: %1$d lb</string>
+    <string name="product_meta_fmt">%1$s · %2$s · %3$d msnm</string>
+    <string name="product_approved_fmt">Café aprobado: %1$s</string>
+    <string name="product_rejected_fmt">Café rechazado: %1$s</string>
+    <string name="product_deleted_fmt">Café eliminado: %1$s</string>
+    <string name="product_delete_title">Eliminar producto</string>
+    <string name="product_delete_msg_fmt">¿Eliminar el café «%1$s» de %2$s? (borrado lógico)</string>
+    <string name="action_approve">Aprobar</string>
+    <string name="action_reject">Rechazar</string>
+
+    <!-- Reporte de ventas A7 -->
+    <string name="report_period_7">7 días</string>
+    <string name="report_period_30">30 días</string>
+    <string name="report_period_365">12 meses</string>
+    <string name="report_kpi_revenue">Ingresos</string>
+    <string name="report_kpi_units">Unidades</string>
+    <string name="report_top_title">Más vendidos</string>
+    <string name="report_export_csv">Exportar CSV</string>
+    <string name="report_exported">CSV generado. Elige una app para compartirlo.</string>
+    <string name="report_empty_title">Sin ventas</string>
+    <string name="report_empty_msg">No hay ventas registradas en el periodo elegido.</string>
+    <string name="report_rank_fmt">#%1$d</string>
+    <string name="report_revenue_fmt">$%1$s</string>
+
+    <!-- Demo visual (roles pendientes de la fase siguiente) -->
+    <string name="demo_pending_role">Pantallas del rol «%1$s» se construyen en la fase siguiente.</string>
+    <string name="visual_demo_title">Sistema visual</string>
+
+    <!-- ================================================== ROL VENDEDOR (V1–V8) -->
+
+    <!-- Títulos de pantalla (toolbar) -->
+    <string name="vendor_dashboard_title">Mi tienda</string>
+    <string name="vendor_products_title">Mis productos</string>
+    <string name="vendor_orders_title">Pedidos</string>
+    <string name="vendor_order_detail_title">Detalle del pedido</string>
+    <string name="vendor_profile_title">Perfil</string>
+    <string name="role_label_vendor">Vendedor</string>
+
+    <!-- Panel principal V1 -->
+    <string name="vendor_hello">¡Hola!</string>
+    <string name="vendor_kpi_sales_label">Ventas 30 días</string>
+    <string name="vendor_kpi_active_label">Activos</string>
+    <string name="vendor_kpi_pending_label">Por confirmar</string>
+    <string name="vendor_section_orders">Pedidos por confirmar</string>
+    <string name="vendor_section_stock">Stock bajo</string>
+    <string name="vendor_orders_empty_title">Sin pedidos por confirmar</string>
+    <string name="vendor_orders_empty_msg">Cuando recibas un pedido aparecerá aquí.</string>
+    <string name="vendor_stock_empty_title">Stock saludable</string>
+    <string name="vendor_stock_empty_msg">Ningún producto activo está por agotarse.</string>
+
+    <!-- Productos V2–V5 -->
+    <string name="vendor_new_product_cd">Crear producto</string>
+    <string name="vendor_new_product_title">Nuevo producto</string>
+    <string name="vendor_edit_product_title">Editar producto</string>
+    <string name="vendor_product_form_subtitle">Completa la información del café</string>
+    <string name="vendor_product_image_cd">Imagen del producto</string>
+    <string name="vendor_pick_gallery">Galería</string>
+    <string name="vendor_take_photo">Cámara</string>
+    <string name="vendor_hint_name">Nombre del café</string>
+    <string name="vendor_hint_category">Categoría</string>
+    <string name="vendor_hint_price">Precio por libra (COP)</string>
+    <string name="vendor_hint_stock">Existencias (lb)</string>
+    <string name="vendor_hint_description">Descripción y notas de cata</string>
+    <string name="vendor_hint_region">Región</string>
+    <string name="vendor_hint_variety">Variedad</string>
+    <string name="vendor_hint_altitude">Altitud (msnm)</string>
+    <string name="vendor_altitude_hint">Altitud cafetera de Colombia: 800–2600 msnm (solo cafés).</string>
+    <string name="vendor_save_draft">Guardar borrador</string>
+    <string name="vendor_send_moderation">Enviar a moderación</string>
+    <string name="vendor_save_changes">Guardar cambios</string>
+    <string name="vendor_error_name">Escribe el nombre del café.</string>
+    <string name="vendor_error_category">Selecciona una categoría.</string>
+    <string name="vendor_error_price">El precio debe ser mayor a 0.</string>
+    <string name="vendor_error_stock">El stock no puede ser negativo.</string>
+    <string name="vendor_error_region">Indica la región de origen.</string>
+    <string name="vendor_error_variety">Indica la variedad del café.</string>
+    <string name="vendor_error_altitude_fmt">La altitud debe estar entre %1$d y %2$d msnm.</string>
+    <string name="vendor_error_description">La descripción debe tener al menos 20 caracteres.</string>
+    <string name="vendor_created_fmt">Producto creado: %1$s</string>
+    <string name="vendor_updated_fmt">Cambios guardados: %1$s</string>
+    <string name="vendor_deleted_fmt">Producto eliminado: %1$s</string>
+    <string name="vendor_delete_title">Eliminar producto</string>
+    <string name="vendor_delete_msg_fmt">¿Eliminar «%1$s»? Esta acción no se puede deshacer.</string>
+    <string name="vendor_products_empty_title">Sin productos aún</string>
+    <string name="vendor_products_empty_msg">Publica tu primer café con el botón +.</string>
+    <string name="vendor_stock_fmt">Stock: %1$d lb</string>
+    <string name="vendor_ops_error">No se pudo completar la operación. Intenta de nuevo.</string>
+
+    <!-- Pedidos V6–V7 -->
+    <string name="chip_order_all">Todos</string>
+    <string name="chip_order_wait">Por confirmar</string>
+    <string name="chip_order_confirmed">Confirmados</string>
+    <string name="chip_order_dispatched">Despachados</string>
+    <string name="chip_order_delivered">Entregados</string>
+    <string name="chip_order_canceled">Cancelados</string>
+    <string name="vendor_order_more_fmt"> +%1$d más</string>
+    <string name="vendor_order_meta_fmt">Hace %1$d día(s) · %2$d lb</string>
+    <string name="vendor_order_address_label">Dirección de entrega</string>
+    <string name="vendor_order_placed_fmt">Recibido hace %1$d día(s)</string>
+    <string name="vendor_order_items_label">Artículos</string>
+    <string name="vendor_order_total_label">Total</string>
+    <string name="vendor_line_units_fmt">%1$d lb</string>
+    <string name="vendor_btn_confirm">Confirmar</string>
+    <string name="vendor_btn_reject">Rechazar</string>
+    <string name="vendor_btn_dispatch">Marcar despachado</string>
+    <string name="vendor_btn_deliver">Marcar entregado</string>
+    <string name="vendor_no_actions">Este pedido ya no requiere acciones.</string>
+    <string name="vendor_reject_title">Rechazar pedido</string>
+    <string name="vendor_reject_msg_fmt">¿Rechazar el pedido de %1$s? Quedará cancelado.</string>
+    <string name="vendor_order_confirmed_fmt">Pedido %1$s confirmado</string>
+    <string name="vendor_order_dispatched_fmt">Pedido %1$s despachado</string>
+    <string name="vendor_order_delivered_fmt">Pedido %1$s entregado</string>
+    <string name="vendor_order_canceled_fmt">Pedido %1$s cancelado</string>
+    <string name="vendor_order_invalid">No puedes ver este pedido.</string>
+
+    <!-- Perfil V8 -->
+    <string name="vendor_cert_label">Certificaciones de la finca</string>
+    <string name="vendor_cert_organic">Orgánico</string>
+    <string name="vendor_cert_forest">Rainforest</string>
+    <string name="vendor_cert_fair">Comercio justo</string>
+    <string name="vendor_profile_edit_title">Editar perfil</string>
+    <string name="vendor_profile_edit_action">Editar datos personales</string>
+    <string name="vendor_profile_saved">Perfil actualizado</string>
+    <string name="vendor_error_phone">El teléfono debe tener al menos 7 dígitos.</string>
+    <string name="vendor_profile_help_short">Tu correo y rol son visibles para los compradores.</string>
+
+    <!-- ================================================== ROL COMPRADOR (C1–C6) -->
+
+    <!-- Categorías (comparten el enum ProductCategory) -->
+    <string name="category_cafe_grano">Café en grano</string>
+    <string name="category_cafe_molido">Café molido</string>
+    <string name="category_cafe_verde">Café verde</string>
+    <string name="category_accesorios">Accesorios</string>
+
+    <!-- Inicio C1 -->
+    <string name="buyer_hello">¡Hola!</string>
+    <string name="buyer_banner_title">Café de origen directo a tu casa</string>
+    <string name="buyer_banner_subtitle">Compra a caficultores colombianos con trazabilidad completa</string>
+    <string name="buyer_section_categories">Explora por categoría</string>
+    <string name="buyer_section_featured">Destacados para ti</string>
+    <string name="buyer_see_all">Ver todo</string>
+    <string name="buyer_featured_empty_title">Catálogo vacío</string>
+    <string name="buyer_featured_empty_msg">Vuelve cuando los vendedores publiquen cafés.</string>
+    <string name="buyer_orders_row_subtitle">Revisa el estado de tus compras</string>
+    <string name="buyer_cart_row_subtitle">Edita cantidades y paga</string>
+
+    <!-- Catálogo C2 -->
+    <string name="buyer_catalog_title">Catálogo</string>
+    <string name="buyer_catalog_empty_title">Sin resultados</string>
+    <string name="buyer_catalog_empty_msg">Prueba con otra búsqueda o categoría.</string>
+
+    <!-- Detalle C3 -->
+    <string name="buyer_product_detail_title">Detalle del café</string>
+    <string name="buyer_qty_label">Cantidad (libras)</string>
+    <string name="buyer_qty_minus_cd">Quitar una libra</string>
+    <string name="buyer_qty_plus_cd">Agregar una libra</string>
+    <string name="buyer_line_total_fmt">%1$s · %2$d lb</string>
+    <string name="buyer_added_to_cart">Agregado al carrito</string>
+    <string name="buyer_view_cart">Ver carrito</string>
+    <string name="buyer_out_of_stock">Sin existencias</string>
+    <string name="buyer_stock_fmt_fmt">Existencias: %1$d lb</string>
+    <string name="buyer_qty_invalid">No hay existencias suficientes.</string>
+    <string name="buyer_meta_region_fmt">Región: %1$s</string>
+    <string name="buyer_meta_variety_fmt">Variedad: %1$s</string>
+    <string name="buyer_meta_process_fmt">Proceso: %1$s</string>
+    <string name="buyer_meta_altitude_fmt">Altitud: %1$d msnm</string>
+    <string name="buyer_product_invalid">Este café no está disponible.</string>
+
+    <!-- Carrito C4 -->
+    <string name="buyer_cart_title">Carrito</string>
+    <string name="buyer_cart_total_label">Total</string>
+    <string name="buyer_cart_unit_price_fmt">$%1$d por lb</string>
+    <string name="buyer_cart_remove_cd">Quitar del carrito</string>
+    <string name="buyer_cart_empty_title">Tu carrito está vacío</string>
+    <string name="buyer_cart_empty_msg">Explora el catálogo y agrega tu café favorito.</string>
+    <string name="buyer_cart_removed_fmt">Quitado: %1$s</string>
+    <string name="buyer_delete_line_msg_fmt">¿Quitar «%1$s» del carrito?</string>
+    <string name="buyer_cart_qty_max">No hay más existencias de este café.</string>
+
+    <!-- Pasarela C5 -->
+    <string name="buyer_checkout_title">Pagar</string>
+    <string name="buyer_checkout_summary_label">Resumen de la compra</string>
+    <string name="buyer_delivery_label">Información de entrega</string>
+    <string name="buyer_hint_recipient">Nombre de quien recibe</string>
+    <string name="buyer_hint_address">Dirección completa de entrega</string>
+    <string name="buyer_payment_label">Método de pago</string>
+    <string name="buyer_pay_card_demo">Tarjeta de demo •••• 4242</string>
+    <string name="buyer_pay_pse_demo">Débito PSE (demo)</string>
+    <string name="buyer_pay_cash_demo">Pago contraentrega (demo)</string>
+    <string name="buyer_pay_note">Interfaz demostrativa: no se procesan pagos reales ni se solicitan datos bancarios.</string>
+    <string name="buyer_confirm_order_fmt">Confirmar pedido · %1$s</string>
+    <string name="buyer_confirm_order">Confirmar pedido</string>
+    <string name="buyer_error_recipient">Escribe el nombre de quien recibe.</string>
+    <string name="buyer_error_address">Escribe la dirección de entrega.</string>
+    <string name="buyer_checkout_empty_title">Nada por pagar</string>
+    <string name="buyer_checkout_empty_msg">Tu carrito está vacío.</string>
+    <string name="buyer_stock_changed">El stock cambió mientras pagabas. Revisa tu carrito e intenta de nuevo.</string>
+    <string name="buyer_checkout_error">No se pudo confirmar el pedido. Intenta de nuevo.</string>
+
+    <!-- Confirmación -->
+    <string name="buyer_success_title">¡Pedido confirmado!</string>
+    <string name="buyer_success_message_fmt">Total $%1$s · %2$s.\nLa finca te confirmará pronto.</string>
+    <string name="buyer_success_orders_fmt">Pedido(s): %1$s</string>
+    <string name="buyer_success_see_orders">Ver mis pedidos</string>
+    <string name="buyer_success_keep_shopping">Seguir comprando</string>
+
+    <!-- Historial / Perfil C6 -->
+    <string name="buyer_orders_history_title">Mis compras</string>
+    <string name="buyer_orders_empty_title">Aún no compras café</string>
+    <string name="buyer_orders_empty_msg">Tus pedidos aparecerán aquí tras tu primera compra.</string>
+    <string name="buyer_order_id_fmt">Pedido %1$s</string>
+    <string name="buyer_history_title">Historial de compras</string>
+    <string name="buyer_history_subtitle">Estados y totales de tus pedidos</string>
+
+</resources>

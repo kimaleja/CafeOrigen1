@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Componente reutilizable: estado vacío.
+  La raíz es EmptyStateView (java/core/ui); el texto se personaliza por código
+  o reutilizando los strings por defecto.
+-->
+<com.cafeorigen.core.ui.EmptyStateView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="@dimen/spacing_24"
+        android:paddingEnd="@dimen/spacing_24"
+        android:paddingTop="@dimen/spacing_32"
+        android:paddingBottom="@dimen/spacing_32">
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_receipt"
+            app:tint="@color/cafe_300" />
+
+        <TextView
+            android:id="@+id/empty_title_text"
+            style="@style/TextAppearance.CafeOrigen.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_16"
+            android:gravity="center"
+            android:text="@string/empty_state_title" />
+
+        <TextView
+            android:id="@+id/empty_message_text"
+            style="@style/TextAppearance.CafeOrigen.Subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:gravity="center"
+            android:text="@string/empty_state_message" />
+    </LinearLayout>
+
+</com.cafeorigen.core.ui.EmptyStateView>

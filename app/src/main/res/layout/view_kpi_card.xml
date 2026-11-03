@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Componente reutilizable: tarjeta KPI.
+  Comportaje por los tres roles (ventas, usuarios, stock…). Se parametriza
+  con los atributos del declare-styleable "KpiCard" (kpiValue, kpiLabel,
+  kpiIcon, kpiAccentColor) y se infla en KpiCardView (java/core/ui).
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/shape_card"
+        android:elevation="@dimen/elevation_low"
+        android:paddingStart="@dimen/spacing_8"
+        android:paddingEnd="@dimen/spacing_8"
+        android:paddingTop="@dimen/spacing_12"
+        android:paddingBottom="@dimen/spacing_12">
+
+        <FrameLayout
+            android:id="@+id/kpi_icon_container"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/shape_icon_badge">
+
+            <ImageView
+                android:id="@+id/kpi_icon_image"
+                android:layout_width="@dimen/size_icon"
+                android:layout_height="@dimen/size_icon"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_bar_chart" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/kpi_value_text"
+            style="@style/TextAppearance.CafeOrigen.Display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:gravity="center"
+            android:text="@string/demo_kpi_sales_value" />
+
+        <TextView
+            android:id="@+id/kpi_label_text"
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_2"
+            android:gravity="center"
+            android:text="@string/demo_kpi_sales_label" />
+
+    </LinearLayout>
+
+</merge>
