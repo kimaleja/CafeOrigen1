@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CafeOrigen — Menú de acciones por usuario del listado del Admin -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_user_edit"
+        android:title="@string/users_menu_edit" />
+
+    <item
+        android:id="@+id/action_user_delete"
+        android:title="@string/users_menu_delete" />
+
+</menu>

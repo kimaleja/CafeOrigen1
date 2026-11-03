@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Contenedor principal con app bar, contenido por rol y
+  navegación inferior (T5 + control de acceso por rol T6).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/main_toolbar"
+        style="@style/Widget.CafeOrigen.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_toolbar"
+        android:elevation="0dp"
+        app:menu="@menu/menu_toolbar_demo"
+        app:title="@string/app_name" />
+
+    <FrameLayout
+        android:id="@+id/main_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_view"
+        style="@style/Widget.CafeOrigen.BottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_navbar" />
+
+</LinearLayout>
