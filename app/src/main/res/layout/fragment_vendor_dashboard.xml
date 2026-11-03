@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Panel principal del Vendedor (V1).
+  KPIs propios, gráfico semanal, alertas de stock y pedidos por confirmar.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16">
+
+        <TextView
+            android:id="@+id/vendor_greeting_text"
+            style="@style/TextAppearance.CafeOrigen.Display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vendor_hello" />
+
+        <TextView
+            android:id="@+id/vendor_greeting_sub"
+            style="@style/TextAppearance.CafeOrigen.Subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_4"
+            android:text="@string/brand_tagline_short" />
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/dash_section_kpi" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:orientation="horizontal">
+
+            <com.cafeorigen.core.ui.KpiCardView
+                android:id="@+id/vendor_kpi_sales"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_12"
+                android:layout_weight="1"
+                app:kpiAccentColor="@color/accent_gold"
+                app:kpiIcon="@drawable/ic_bar_chart"
+                app:kpiLabel="@string/vendor_kpi_sales_label"
+                app:kpiValue="…" />
+
+            <com.cafeorigen.core.ui.KpiCardView
+                android:id="@+id/vendor_kpi_active"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_12"
+                android:layout_weight="1"
+                app:kpiAccentColor="@color/cafe_600"
+                app:kpiIcon="@drawable/ic_inventory"
+                app:kpiLabel="@string/vendor_kpi_active_label"
+                app:kpiValue="…" />
+
+            <com.cafeorigen.core.ui.KpiCardView
+                android:id="@+id/vendor_kpi_pending"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:kpiAccentColor="@color/warning"
+                app:kpiIcon="@drawable/ic_receipt"
+                app:kpiLabel="@string/vendor_kpi_pending_label"
+                app:kpiValue="…" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/dash_chart_title" />
+
+        <com.cafeorigen.core.ui.BarChartView
+            android:id="@+id/vendor_chart_view"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:barColor="@color/accent_gold"
+            app:barTrackColor="@color/cafe_100" />
+
+        <TextView
+            android:id="@+id/vendor_chart_labels_text"
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_4"
+            android:gravity="center"
+            android:text="L  M  X  J  V  S  D" />
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/vendor_section_orders" />
+
+        <com.cafeorigen.core.ui.EmptyStateView
+            android:id="@+id/vendor_orders_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/vendor_orders_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:orientation="vertical" />
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/vendor_section_stock" />
+
+        <com.cafeorigen.core.ui.EmptyStateView
+            android:id="@+id/vendor_stock_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/vendor_stock_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:orientation="vertical" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_16" />
+    </LinearLayout>
+
+</ScrollView>

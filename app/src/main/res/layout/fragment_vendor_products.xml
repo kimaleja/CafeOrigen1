@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen — Listado de productos del Vendedor (V2).
+  Búsqueda, chips de estado, RecyclerView, FAB para crear y estado vacío.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/vendor_products_search_input"
+            style="@style/Widget.CafeOrigen.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginEnd="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_16"
+            android:hint="@string/users_search_hint"
+            app:startIconDrawable="@drawable/ic_search">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/vendor_products_search_edit"
+                style="@style/Widget.CafeOrigen.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_field_height"
+                android:imeOptions="actionSearch"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/vendor_products_filter_chips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_vendor_all"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:checked="true"
+                android:text="@string/chip_all" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_vendor_active"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/products_filter_active" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_vendor_pending"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/products_filter_pending" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_vendor_draft"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/products_filter_draft" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_vendor_rejected"
+                style="@style/Widget.CafeOrigen.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="@string/products_filter_rejected" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <ProgressBar
+            android:id="@+id/vendor_products_progress"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_32"
+            android:indeterminateTint="@color/accent_gold"
+            android:visibility="gone" />
+
+        <com.cafeorigen.core.ui.EmptyStateView
+            android:id="@+id/vendor_products_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vendor_products_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/spacing_16"
+            android:layout_marginEnd="@dimen/spacing_16"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:clipToPadding="false"
+            android:paddingBottom="96dp" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/vendor_products_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/spacing_24"
+        android:contentDescription="@string/vendor_new_product_cd"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/cafe_700"
+        app:tint="@color/text_on_dark" />
+
+</FrameLayout>
