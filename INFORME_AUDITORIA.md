@@ -1,8 +1,8 @@
 # Informe de auditoría técnica integral — Frontend Android CaféOrigen
 
-**Fecha:** 02/11/2026
+**Fecha:** 02/11/2026 — **actualizada el 04/11/2026 con sesión de pruebas runtime en emulador (§16)**
 **Alcance:** App nativa Android (Java, MVVM por capas, mock en memoria) — 3 roles (ADMIN, VENDEDOR, COMPRADOR) + splash/auth/biometría/recuperación.
-**Método:** verificación estática (scripts PowerShell de cruce de referencias, inspección de código/XML, compilación real con Gradle y Android Lint). **No se ejecutó la app en dispositivo ni emulador** (ver limitación al final); ningún resultado de este informe corresponde a pruebas de runtime.
+**Método:** verificación estática (cruce de referencias, inspección de código/XML, compilación real con Gradle y Android Lint) **+ sesión runtime del 04/11/2026 en emulador AVD API 37** (autenticación completa, arranque por rol del comprador, navegación por tabs), que detectó y corrigió 2 defectos reales (§16–17). Los recorridos funcionales restantes (checkout cross-role, admin CRUD, rotación, biometría) siguen sin ejecutarse en device.
 
 ---
 
@@ -18,7 +18,8 @@
 | Fragmentos huérfanos (sin límite de uso) | ✅ 0 (22 fragments, todos referenciados) |
 | Botones interactivos sin acción en Java | ✅ 0 |
 | Layouts con px hardcodeados | ✅ 0 |
-| Errores corregidos durante la auditoría | 9 (ver §16) |
+| Errores corregidos durante la auditoría | 9 (estáticos, ver §17) |
+| Defectos runtime detectados en emulador y corregidos | 2 (ver §16, commits `fdfd8c0` y `647029b`) |
 
 ---
 
@@ -93,17 +94,25 @@ BUILD SUCCESSFUL
 
 ---
 
-## 16. Limitación principal del informe: sin pruebas de runtime
+## 16. Pruebas de runtime (04/11/2026, emulador) — update
 
-**No se ejecutó ninguna prueba funcional en dispositivo/emulador real.** `adb devices` (02/11/2026) devuelve la lista **sin ningún** dispositivo conectado:
+Tras la auditoría estática se realizó una **sesión de pruebas runtime en emulador** (AVD API 37, `emulator-5554`, app `com.cafeorigen` instalada desde el APK debug). Resultado: **se encontraron 2 defectos reales que la verificación estática no puede detectar**, ambos corregidos y re-verificados en el emulador (commits `fdfd8c0` y `647029b`):
 
-```
-> adb devices
-List of devices attached
-(empty)
-```
+| # | Defecto detectado en runtime | Método de detección | Corrección |
+|---|---|---|---|
+| 10 | `StackOverflowError` en `MainActivity`: `showRoot()` marca el tab con `setSelectedItemId`, que en Material 1.12 re-dispara el listener de navegación aunque el tab ya esté seleccionado → recursión infinita `showRoot ↔ handleXNav`. Crasheaba **todas** las entradas a la app logueada (login y auto-login tras registro). El buffer `adb logcat crash` registró 6 crashes idénticos. | Traza de `adb logcat -b crash` | Guarda `suppressNavCallback`: la llamada programática a `setSelectedItemId` se centralizó en `selectTab()`, que suprime el callback durante la marcación |
+| 11 | `InflateException` con recursión infinita en inflación: `EmptyStateView` (y el mismo patrón en `RowItemView`) infla en su constructor `view_empty_state.xml` / `view_row_item.xml`, cuyo **elemento raíz era la propia clase** → el componente se infla a sí mismo sin fin. Crasheaba `BuyerHomeFragment` y cualquier pantalla con estos componentes. | Traza de `adb logcat -b crash` | Cambio de raíz a `<merge>` en ambos layouts (el patrón ya correcto de `view_kpi_card.xml`); `KpiCardView` no requería cambios |
 
-Sin dispositivo conectado no se pudo ejecutar QA funcional (tocar botones, verificar toasts y snackbars, recorridos de navegación, capturas ni medición de rendimiento). Todo lo afirmado en §2–§14 quedó verificado de forma **estática** (código, referencias, compilación real y Lint sobre el build final). Para completar el plan con pruebas de ejecución, seguir estas instrucciones con Android Studio y un emulador/dispositivo conectado:
+**Re-verificación runtime tras las correcciones (evidencia en emulador):**
+
+1. `adb install -r app-debug.apk` → Success; arranque con sesión persistida de un comprador recién registrado → proceso estable (sin crash tras 15 s).
+2. `BuyerHomeFragment` en primer plano: saludo con el nombre real del usuario registrado ("Hola, kim 👋"), tab `nav_inicio` marcado (`selected="true"` verificado con `uiautomator dump`) y cafés destacados renderizados.
+3. Navegación real por los 5 tabs del comprador (tap por `adb shell input tap`): Catálogo (tab seleccionado y fragment reemplazado), Pedidos y Perfil — proceso vivo durante toda la secuencia, **0 crashes**.
+4. Registro de usuario nuevo por UI → auto-login a `MainActivity` operando sin crash.
+
+**Alcance de esta sesión runtime (honesto):** se verificó autenticación completa (registro + auto-login), arranque por rol del comprador y navegación inferior. **No** se recorrieron a fondo: checkout completo (pago→stock→pedido en vendedor), CRUD de productos del vendedor, moderación/CRUD de usuarios del admin, rotación de pantalla y biometría. §18 queda actualizado en consecuencia.
+
+Guía pendiente para QA funcional completo si se quiere extender el alcance:
 
 1. Con `comprador@cafeorigen.co / cafe1234`, recorrer los 6 flujos del comprador (inicio → catálogo → detalle → stepper → carrito → checkout → confirmación → historial).
 2. Con `vendedor@cafeorigen.co / vend1234` (U-1002): el stock debe reflejar el descuento del pedido demo del comprador tras un checkout; O-206 (de U-1005) debe seguir invisible para U-1002.
@@ -139,8 +148,11 @@ Sin dispositivo conectado no se pudo ejecutar QA funcional (tocar botones, verif
 | Parse XML de los 39 layouts | ✅ |
 | Aislamiento por rol (handlers/binding/repo) | ✅ (inspección) |
 | Stock y persistencia de compra entre roles | ✅ (inspección del mock; sin runtime) |
-| **Recorrer pantallas (botones, onResume/onPause, rotación real)** | ❌ sin dispositivo |
-| **Capturas de pantalla de las interfaces** | ❌ sin dispositivo |
+| **Recorrer pantallas (navegación por tabs, sesiones, registro)** | ✅ runtime 04/11/2026 en emulador (§16): 2 defectos reales detectados, corregidos y re-verificados |
+| **Checkout completo cross-role (comprador→vendedor), moderación admin, CRUD productos** | ❌ pendiente en runtime |
+| **Rotación de pantalla** | ❌ pendiente en runtime |
+| **Biometría con prompt del sistema** | ❌ pendiente en emulador sin huella registrada |
+| **Capturas de pantalla de las interfaces** | ✅ captura del comprador Inicio en emulador |
 | **Pruebas de rendimiento/memoria (profiler, iteraciones de stress)** | ❌ sin dispositivo |
 
 **Conclusión:** el front-end de los 3 roles compila limpio, todas las referencias a recursos y la navegación resuelven, la separación de permisos por rol es correcta en la capa de datos y los errores detectados quedan corregidos y verificados con build + Lint ejecutados (32 errores de Lint + 6 atributos `app:tint` duplicados + 2 erratas de texto + 1 evento de UI no consumido). Las pruebas funcionales en runtime requieren un dispositivo o emulador conectado y **no** se declararon como ejecutadas.

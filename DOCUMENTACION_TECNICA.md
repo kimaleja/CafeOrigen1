@@ -256,7 +256,9 @@ Metodología honesta: **verificación estática + compilación + Lint**; en esta
 | Fragmentos huérfanos | Cruce de nombres de clase ↔ referencias en el código | ✅ 0 (22/22 usados) |
 | px hardcodeados | Regex en 39 layouts | ✅ 0 |
 | Permisos por rol | Inspección de handlers/repositorios | ✅ aislados (buyerId/vendorId/rol) |
-| **Recorrer pantallas (runtime)** | — | ❌ sin dispositivo ([ver informe](INFORME_AUDITORIA.md)) |
+| **Registro + auto-login (runtime)** | Emulador AVD API 37, `logcat crash` | ✅ sesión iniciada y persistida (éste recorrido detectó 2 defectos, corregidos en commits `fdfd8c0`/`647029b`) |
+| **Navegación por tabs comprador (runtime)** | `adb shell input tap` + `uiautomator dump` | ✅ 5 tabs, selección y fragmento correctos, proceso estable, 0 crashes |
+| Checkout completo cross-role, CRUD admin/vendedor, rotación, biometría | — | ❌ runtime pendiente ([ver informe](INFORME_AUDITORIA.md) §16) |
 
 ## 16. Generación del APK
 
@@ -291,7 +293,7 @@ Metodología honesta: **verificación estática + compilación + Lint**; en esta
 
 ### Limitaciones conocidas (documentadas, no errores)
 - **Sin backend**: la capa de datos es un mock en memoria; los datos del negocio se regeneran en cada arranque (por diseño, solo persiste la sesión del usuario).
-- **Pruebas de runtime**: el recorrido funcional de las pantallas no se ejecutó en device (no había dispositivo conectado durante la auditoría); la verificación es estática, más build y Lint.
+- **Pruebas de runtime parcial**: el 04/11/2026 se ejecutó una sesión en emulador (registro + auto-login, arranque del comprador, navegación por tabs) que detectó y corrigió 2 defectos reales; el checkout cruzado entre roles, el CRUD admin/vendedor, la rotación y la biometría quedan sin recorrer en device — ver `INFORME_AUDITORIA.md` §16.
 - **Pasarela demo**: no procesa pagos reales ni solicita datos bancarios de ningún tipo.
 - **Sin variantes de pantalla**: no hay `values-sw*dp` ni layouts landscape/tablet — la UI escala, pero no está afinada para pantallas grandes.
 - **VM compartidos**: los ViewModels compartidos entre lista y formulario (`requireActivity()`) mantienen eventos sin consumir: snackbars/toasts se repiten al rotar; el consumo single-shot solo se aplicó en `BuyerCheckoutViewModel`.
