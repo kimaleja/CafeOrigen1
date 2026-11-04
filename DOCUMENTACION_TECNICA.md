@@ -256,8 +256,10 @@ Metodología honesta: **verificación estática + compilación + Lint**; en esta
 | Fragmentos huérfanos | Cruce de nombres de clase ↔ referencias en el código | ✅ 0 (22/22 usados) |
 | px hardcodeados | Regex en 39 layouts | ✅ 0 |
 | Permisos por rol | Inspección de handlers/repositorios | ✅ aislados (buyerId/vendorId/rol) |
-| **Registro + auto-login (runtime)** | Emulador AVD API 37, `logcat crash` | ✅ sesión iniciada y persistida (éste recorrido detectó 2 defectos, corregidos en commits `fdfd8c0`/`647029b`) |
-| **Navegación por tabs comprador (runtime)** | `adb shell input tap` + `uiautomator dump` | ✅ 5 tabs, selección y fragmento correctos, proceso estable, 0 crashes |
+| **Login por los 3 roles + logout (runtime)** | Emulador AVD API 37, `logcat crash` | ✅ registro + admin + vendedor con sesión estable (el recorrido detectó 3 defectos, corregidos en commits `fdfd8c0`/`647029b`/vendor-NPE) |
+| **Navegación por tabs de los 3 roles (runtime)** | `adb shell input tap` + `uiautomator dump` | ✅ selección y fragmentos correctos, proceso estable, 0 crashes |
+| **Moderación admin (runtime)** | Tap "Aprobar" en Pendientes | ✅ café pasa de Pendientes a Activos |
+| **Transición de pedido vendedor (runtime)** | Detalle → "Confirmar" | ✅ badge Por confirmar → Confirmado propagado a la lista |
 | Checkout completo cross-role, CRUD admin/vendedor, rotación, biometría | — | ❌ runtime pendiente ([ver informe](INFORME_AUDITORIA.md) §16) |
 
 ## 16. Generación del APK

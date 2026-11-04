@@ -19,7 +19,7 @@
 | Botones interactivos sin acción en Java | ✅ 0 |
 | Layouts con px hardcodeados | ✅ 0 |
 | Errores corregidos durante la auditoría | 9 (estáticos, ver §17) |
-| Defectos runtime detectados en emulador y corregidos | 2 (ver §16, commits `fdfd8c0` y `647029b`) |
+| Defectos runtime detectados en emulador y corregidos | 3 (ver §16, commits `fdfd8c0`, `647029b` + fix vendedor) |
 
 ---
 
@@ -102,6 +102,7 @@ Tras la auditoría estática se realizó una **sesión de pruebas runtime en emu
 |---|---|---|---|
 | 10 | `StackOverflowError` en `MainActivity`: `showRoot()` marca el tab con `setSelectedItemId`, que en Material 1.12 re-dispara el listener de navegación aunque el tab ya esté seleccionado → recursión infinita `showRoot ↔ handleXNav`. Crasheaba **todas** las entradas a la app logueada (login y auto-login tras registro). El buffer `adb logcat crash` registró 6 crashes idénticos. | Traza de `adb logcat -b crash` | Guarda `suppressNavCallback`: la llamada programática a `setSelectedItemId` se centralizó en `selectTab()`, que suprime el callback durante la marcación |
 | 11 | `InflateException` con recursión infinita en inflación: `EmptyStateView` (y el mismo patrón en `RowItemView`) infla en su constructor `view_empty_state.xml` / `view_row_item.xml`, cuyo **elemento raíz era la propia clase** → el componente se infla a sí mismo sin fin. Crasheaba `BuyerHomeFragment` y cualquier pantalla con estos componentes. | Traza de `adb logcat -b crash` | Cambio de raíz a `<merge>` en ambos layouts (el patrón ya correcto de `view_kpi_card.xml`); `KpiCardView` no requería cambios |
+| 12 | `NullPointerException` en `VendorDashboardFragment.bindStats`: el LiveData del `VendorDashboardViewModel` entrega su valor inicial **null** antes de que el repositorio responda (350 ms) y el fragmento no lo validaba → crash al entrar como vendedor. El dashboard del ADMIN sí tenía la guarda `stats == null` — el del vendedor se quedó sin ella. | Traza de `adb logcat -b crash` (primera pasada) | Guarda `if (stats == null \|\| binding == null) return;` en `bindStats` (también protege la respuesta tardía si la vista se destruyó durante la latencia) |
 
 **Re-verificación runtime tras las correcciones (evidencia en emulador):**
 
@@ -109,8 +110,10 @@ Tras la auditoría estática se realizó una **sesión de pruebas runtime en emu
 2. `BuyerHomeFragment` en primer plano: saludo con el nombre real del usuario registrado ("Hola, kim 👋"), tab `nav_inicio` marcado (`selected="true"` verificado con `uiautomator dump`) y cafés destacados renderizados.
 3. Navegación real por los 5 tabs del comprador (tap por `adb shell input tap`): Catálogo (tab seleccionado y fragment reemplazado), Pedidos y Perfil — proceso vivo durante toda la secuencia, **0 crashes**.
 4. Registro de usuario nuevo por UI → auto-login a `MainActivity` operando sin crash.
+5. **Rol ADMIN completo**: logout comprador → login `admin@cafeorigen.co` → dashboard (KPIs, gráfico de barras), tab Usuarios (lista + filtros), tab Productos (moderación real: filtrar Pendientes, aprobar "Cauca · Honey Selecto", verificar que el café aparece en Activos).
+6. **Rol VENDEDOR completo** (tras corrección del defecto 12, re-verificado): login `vendedor@cafeorigen.co` → dashboard estable, tab Productos (mis productos + filtros), tab Pedidos (lista + filtros de estado), transición real **Por confirmar → Confirmado** desde el detalle del pedido (badge propagado a la lista) y Perfil con datos de la finca.
 
-**Alcance de esta sesión runtime (honesto):** se verificó autenticación completa (registro + auto-login), arranque por rol del comprador y navegación inferior. **No** se recorrieron a fondo: checkout completo (pago→stock→pedido en vendedor), CRUD de productos del vendedor, moderación/CRUD de usuarios del admin, rotación de pantalla y biometría. §18 queda actualizado en consecuencia.
+**Alcance de esta sesión runtime (honesto):** verificación de autenticación completa (registro, login por los 3 roles, logout), arranque por rol de comprador/admin/vendedor, navegación inferior de los 3 roles, y acciones reales de admin (aprobar producto) y vendedor (confirmar pedido). **No** se recorrieron a fondo: checkout del comprador (pago→stock→pedido en vendedor), CRUD de productos del vendedor, CRUD de usuarios del admin, rotación de pantalla y biometría. §18 queda actualizado en consecuencia.
 
 Guía pendiente para QA funcional completo si se quiere extender el alcance:
 
