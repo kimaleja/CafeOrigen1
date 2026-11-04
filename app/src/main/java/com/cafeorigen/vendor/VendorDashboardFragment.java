@@ -66,6 +66,11 @@ public class VendorDashboardFragment extends Fragment {
     }
 
     private void bindStats(VendorDataRepository.VendorDashboard stats) {
+        // El LiveData entrega null inicial (antes de la respuesta del mock);
+        // y el binding puede estar nulo si la vista se destruyó durante la latencia.
+        if (stats == null || binding == null) {
+            return;
+        }
         binding.vendorKpiSales.setValue(revenueLabel(stats.salesMonth));
         binding.vendorKpiActive.setValue(String.valueOf(stats.activeProducts));
         binding.vendorKpiPending.setValue(String.valueOf(stats.pendingOrders));
