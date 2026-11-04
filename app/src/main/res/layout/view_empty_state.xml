@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  CafeOrigen — Componente reutilizable: estado vacío.
-  La raíz es EmptyStateView (java/core/ui); el texto se personaliza por código
-  o reutilizando los strings por defecto.
+  CafeOrigen — Contenido del componente reutilizable: estado vacío.
+  La raíz es <merge> (el contenedor real es EmptyStateView, que infla este
+  layout como hijos de sí mismo en su constructor); el texto se personaliza
+  por código o reutilizando los strings por defecto.
 -->
-<com.cafeorigen.core.ui.EmptyStateView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<merge xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,4 +43,4 @@
             android:text="@string/empty_state_message" />
     </LinearLayout>
 
-</com.cafeorigen.core.ui.EmptyStateView>
+</merge>
