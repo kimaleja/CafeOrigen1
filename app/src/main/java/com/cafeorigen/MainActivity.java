@@ -41,6 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
+    /**
+     * Guarda contra re-entrada: setSelectedItemId vuelve a disparar el listener
+     * incluso cuando el tab ya está seleccionado (crash real detectado en
+     * emulador: StackOverflowError por recursión showRoot ↔ handleRoleNav).
+     * Cuando showRoot/los saltos programáticos marcan el tab por código, se
+     * suprime el callback para que no vuelva a navegar.
+     */
+    private boolean suppressNavCallback;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +102,11 @@ public class MainActivity extends AppCompatActivity {
         binding.bottomNavView.getMenu().clear();
         binding.bottomNavView.inflateMenu(menuRes);
         binding.bottomNavView.setOnItemSelectedListener(item -> {
+            if (suppressNavCallback) {
+                // Selección aplicada por código (showRoot / openRoot*): el item
+                // queda marcado pero NO se re-dispara el ruteo (evita el bucle).
+                return true;
+            }
             @IdRes int id = item.getItemId();
             Role currentRole = SessionManager.get(this).getRole();
             // El ruteo depende del rol de la sesión (control de acceso T6).
@@ -202,8 +216,18 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.main_fragment_container, fragment)
                 .commit();
         if (checkedItem != 0) {
-            binding.bottomNavView.setSelectedItemId(checkedItem);
+            selectTab(checkedItem);
         }
+    }
+
+    /**
+     * Marca el tab por código sin re-disparar el listener de navegación.
+     * Único punto donde se usa setSelectedItemId (guarda anti re-entrada).
+     */
+    private void selectTab(@IdRes int itemId) {
+        suppressNavCallback = true;
+        binding.bottomNavView.setSelectedItemId(itemId);
+        suppressNavCallback = false;
     }
 
     /** Abre sub-pantallas (formulario, reporte) manteniendo el tab actual. */
@@ -222,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Salto programático al tab de productos (alerta de stock del panel V1). */
     public void openRootProducts() {
-        binding.bottomNavView.setSelectedItemId(R.id.nav_productos);
+        selectTab(R.id.nav_productos);
     }
 
     /** Catálogo del comprador prefiltrado por categoría (C1 → C2). */
@@ -232,12 +256,12 @@ public class MainActivity extends AppCompatActivity {
 
     /** Carrito del comprador (acciones "Ver carrito"). */
     public void openRootCart() {
-        binding.bottomNavView.setSelectedItemId(R.id.nav_carrito);
+        selectTab(R.id.nav_carrito);
     }
 
     /** Historial del comprador (tras confirmar la compra). */
     public void openRootOrders() {
-        binding.bottomNavView.setSelectedItemId(R.id.nav_pedidos);
+        selectTab(R.id.nav_pedidos);
     }
 
     /** Cierre de sesión pedido desde el perfil (V8), con confirmación. */
