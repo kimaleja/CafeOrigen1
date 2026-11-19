@@ -2,6 +2,7 @@ package com.cafeorigen.auth;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,21 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auth);
         // Garantiza la detección de Firebase aunque se entre directo a Auth.
         FirebaseBootstrap.init(this);
+
+        // Navegación de retorno coherente: desde Registro o Recuperación el
+        // botón atrás vuelve al Login; en Login sale de la autenticación.
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Fragment current = getSupportFragmentManager()
+                        .findFragmentById(R.id.auth_fragment_container);
+                if (current instanceof LoginFragment || current == null) {
+                    finish();
+                } else {
+                    showFragment(new LoginFragment());
+                }
+            }
+        });
     }
 
     /** Reemplaza el fragmento actual del contenedor de autenticación. */

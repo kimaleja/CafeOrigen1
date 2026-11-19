@@ -19,6 +19,7 @@ import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
 import com.cafeorigen.core.data.MockDataProvider;
 import com.cafeorigen.core.data.SessionManager;
+import com.cafeorigen.core.data.firebase.FirebaseAuthDataSource;
 import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 import com.cafeorigen.core.model.User;
 import com.cafeorigen.databinding.FragmentLoginBinding;
@@ -34,6 +35,8 @@ public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
     private AuthViewModel viewModel;
+    /** Evita abrir MainActivity dos veces si el LiveData reemite SUCCESS. */
+    private boolean navigationDone;
 
     @Nullable
     @Override
@@ -77,6 +80,9 @@ public class LoginFragment extends Fragment {
                     clearFieldErrors();
                     break;
                 case SUCCESS:
+                    if (navigationDone) {
+                        return;
+                    }
                     // Abre sesión y habilita la huella para el próximo ingreso.
                     SessionManager.get(requireContext()).startSession(state.user);
                     goToMain();
@@ -139,7 +145,12 @@ public class LoginFragment extends Fragment {
                 // Estados no compatibles: continuar por la vía convencional.
                 Toast.makeText(requireContext(), R.string.biometric_unsupported, Toast.LENGTH_LONG).show();
                 break;
+            case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
+                Toast.makeText(requireContext(), R.string.biometric_security_update,
+                        Toast.LENGTH_LONG).show();
+                break;
             default:
+                // BIOMETRIC_STATUS_UNKNOWN u otro estado: se ofrece la vía convencional.
                 Toast.makeText(requireContext(), R.string.biometric_unsupported, Toast.LENGTH_SHORT).show();
         }
     }
@@ -161,6 +172,12 @@ public class LoginFragment extends Fragment {
                 // En modo Firebase la identidad queda cacheada en SessionManager
                 // (el SDK conserva la sesión); en modo mock se usa el seed local.
                 SessionManager session = SessionManager.get(requireContext());
+                if (FirebaseBootstrap.isConfigured() && !FirebaseAuthDataSource.get().hasSession()) {
+                    // La huella es válida, pero el token del SDK ya no: se pide login.
+                    Toast.makeText(requireContext(), R.string.biometric_session_expired,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
                 User lastUser = FirebaseBootstrap.isConfigured()
                         ? session.restoreLastUser()
                         : MockDataProvider.findById(session.getLastUserId());
@@ -172,13 +189,40 @@ public class LoginFragment extends Fragment {
             }
 
             @Override
+            public void onAuthenticationFailed() {
+                // El diálogo del sistema sigue abierto: se informa y se permite
+                // reintentar o continuar con contraseña.
+                Toast.makeText(requireContext(), R.string.biometric_failed,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON
-                        || errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
-                    // Continua con autenticación convencional: permanece en el login.
-                    return;
+                switch (errorCode) {
+                    case BiometricPrompt.ERROR_NEGATIVE_BUTTON:
+                        // "Usar contraseña": se permanece en el login sin ruido.
+                        return;
+                    case BiometricPrompt.ERROR_USER_CANCELED:
+                    case BiometricPrompt.ERROR_CANCELED:
+                        Toast.makeText(requireContext(), R.string.biometric_cancelled,
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    case BiometricPrompt.ERROR_LOCKOUT:
+                        Toast.makeText(requireContext(), R.string.biometric_lockout,
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
+                        Toast.makeText(requireContext(), R.string.biometric_lockout_permanent,
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    case BiometricPrompt.ERROR_NO_BIOMETRICS:
+                        Toast.makeText(requireContext(), R.string.biometric_no_enrolled,
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    default:
+                        // HW no disponible, timeout, etc.: mensaje del sistema.
+                        Toast.makeText(requireContext(), errString, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(requireContext(), errString, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -195,6 +239,7 @@ public class LoginFragment extends Fragment {
     // ============================ Navegación ============================
 
     private void goToMain() {
+        navigationDone = true;
         Intent intent = new Intent(requireContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

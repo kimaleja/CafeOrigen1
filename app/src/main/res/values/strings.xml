@@ -98,6 +98,13 @@
     <string name="biometric_unsupported">Este dispositivo no soporta biometría. Ingresar con contraseña.</string>
     <string name="biometric_cancelled">Autenticación biométrica cancelada.</string>
     <string name="biometric_ok">Huella verificada.</string>
+    <string name="biometric_failed">Huella no reconocida. Intenta de nuevo o usa tu contraseña.</string>
+    <string name="biometric_lockout">Demasiados intentos fallidos. Espera 30 segundos o ingresa con tu contraseña.</string>
+    <string name="biometric_lockout_permanent">La biometría está bloqueada en este dispositivo. Desbloquéalo con tu PIN/patrón o ingresa con tu contraseña.</string>
+    <string name="biometric_security_update">El dispositivo requiere una actualización de seguridad para usar la biometría.</string>
+    <string name="biometric_session_expired">Tu sesión anterior expiró. Ingresa con tu correo y contraseña.</string>
+    <string name="access_denied_role">Tu rol no tiene permiso para abrir esta pantalla.</string>
+    <string name="notifications_empty">No tienes notificaciones nuevas.</string>
 
     <!-- Recuperación de contraseña -->
     <string name="recovery_title">Recuperar contraseña</string>

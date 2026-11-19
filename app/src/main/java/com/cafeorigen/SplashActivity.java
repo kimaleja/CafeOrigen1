@@ -21,6 +21,10 @@ public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DURATION_MS = 1400L;
 
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    /** Evita enrutar dos veces si el handler y el ciclo de vida se cruzan. */
+    private boolean navigated;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,10 +32,14 @@ public class SplashActivity extends AppCompatActivity {
         // Arranque de Firebase (idempotente): detecta google-services.json y
         // deja operativa la capa de datos. Sin el archivo, modo mock.
         FirebaseBootstrap.init(this);
-        new Handler(Looper.getMainLooper()).postDelayed(this::navigateAccordingToSession, SPLASH_DURATION_MS);
+        handler.postDelayed(this::navigateAccordingToSession, SPLASH_DURATION_MS);
     }
 
     private void navigateAccordingToSession() {
+        if (navigated || isFinishing()) {
+            return;
+        }
+        navigated = true;
         Intent destination;
         if (SessionManager.get(this).isLoggedIn()) {
             destination = new Intent(this, MainActivity.class);
@@ -40,5 +48,13 @@ public class SplashActivity extends AppCompatActivity {
         }
         startActivity(destination);
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Sin esto, una rotación o cierre durante el splash dejaría un enrutado
+        // pendiente sobre una Activity destruida.
+        handler.removeCallbacksAndMessages(null);
     }
 }
