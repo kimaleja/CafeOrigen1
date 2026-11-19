@@ -16,6 +16,7 @@ import com.cafeorigen.R;
 import com.cafeorigen.admin.MoneyFormat;
 import com.cafeorigen.core.data.CartRepository;
 import com.cafeorigen.core.data.MockDataProvider;
+import com.cafeorigen.core.ui.RemoteImageLoader;
 import com.cafeorigen.core.model.Product;
 import com.cafeorigen.core.model.ProductCategory;
 import com.cafeorigen.databinding.FragmentBuyerProductDetailBinding;
@@ -115,7 +116,11 @@ public class BuyerProductDetailFragment extends Fragment {
         ImageView imageView = binding.productDetailImage;
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setPadding(0, 0, 0, 0);
-        imageView.setImageURI(Uri.parse(imageUri));
+        if (RemoteImageLoader.isRemote(imageUri)) {
+            RemoteImageLoader.load(imageView, imageUri);
+        } else {
+            imageView.setImageURI(Uri.parse(imageUri));
+        }
     }
 
     private void setupStepper() {

@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.cafeorigen.core.data.BuyerDataRepository;
 import com.cafeorigen.core.data.CartRepository;
 import com.cafeorigen.core.data.MockDataProvider;
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 import com.cafeorigen.core.model.Product;
 
 import java.util.ArrayList;
@@ -43,13 +45,28 @@ public class BuyerCartViewModel extends ViewModel {
     /** Reconstruye las líneas desde el carrito (llamar en onResume/reportes). */
     public void refresh() {
         List<CartLine> rebuilt = new ArrayList<>();
+        List<String> missing = new ArrayList<>();
         for (CartRepository.CartItem item : cart.items()) {
             Product product = MockDataProvider.findProductById(item.productId);
             if (product != null) {
                 rebuilt.add(new CartLine(product, item.units));
+            } else {
+                missing.add(item.productId);
             }
         }
         lines.setValue(rebuilt);
+
+        // Carrito restaurado desde Firestore: los productos aún no están en el
+        // espejo local; se piden al repositorio (async) y se reintenta el pintado.
+        if (FirebaseBootstrap.isConfigured()) {
+            for (String productId : missing) {
+                BuyerDataRepository.get().productById(productId, result -> {
+                    if (result.isSuccess()) {
+                        refresh();
+                    }
+                });
+            }
+        }
     }
 
     public long total() {

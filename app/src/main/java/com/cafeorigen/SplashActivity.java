@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.cafeorigen.auth.AuthActivity;
 import com.cafeorigen.core.data.SessionManager;
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 
 /**
  * CafeOrigen — Splash (T1). Tras la animación de marca enruta según sesion:
@@ -24,6 +25,9 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        // Arranque de Firebase (idempotente): detecta google-services.json y
+        // deja operativa la capa de datos. Sin el archivo, modo mock.
+        FirebaseBootstrap.init(this);
         new Handler(Looper.getMainLooper()).postDelayed(this::navigateAccordingToSession, SPLASH_DURATION_MS);
     }
 

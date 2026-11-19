@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cafeorigen.R;
+import com.cafeorigen.core.data.firebase.FirebaseAuthDataSource;
 import com.cafeorigen.databinding.FragmentPasswordRecoveryBinding;
 
 /**
@@ -63,7 +64,12 @@ public class PasswordRecoveryFragment extends Fragment {
                     break;
                 case SUCCESS:
                     setButtonsEnabled(true);
-                    if (state.info != null) {
+                    if (FirebaseAuthDataSource.RECOVERY_EMAIL_SENT.equals(state.info)) {
+                        // Modo Firebase: el enlace real ya salió por correo.
+                        Toast.makeText(requireContext(), R.string.recovery_email_sent,
+                                Toast.LENGTH_LONG).show();
+                        ((AuthActivity) requireActivity()).showFragment(new LoginFragment());
+                    } else if (state.info != null) {
                         // Código recibido: avanzar al paso 2.
                         Toast.makeText(requireContext(),
                                 getString(R.string.recovery_code_sent, state.info),
@@ -109,6 +115,10 @@ public class PasswordRecoveryFragment extends Fragment {
                 break;
             case "code_wrong":
                 binding.recoveryCodeInput.setError(getString(R.string.recovery_code_wrong));
+                break;
+            case "recovery_link_required":
+                Toast.makeText(requireContext(), R.string.recovery_email_sent,
+                        Toast.LENGTH_LONG).show();
                 break;
             case "short_password":
                 binding.recoveryPasswordInput.setError(getString(R.string.login_error_short_password));

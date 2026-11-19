@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cafeorigen.R;
 import com.cafeorigen.admin.MoneyFormat;
 import com.cafeorigen.core.model.Product;
+import com.cafeorigen.core.ui.RemoteImageLoader;
 import com.cafeorigen.databinding.ItemBuyerProductBinding;
 
 /**
@@ -82,7 +83,11 @@ public class BuyerProductsAdapter extends ListAdapter<Product, BuyerProductsAdap
             binding.productVendorText.setText(product.vendorName);
 
             if (product.imageUri != null && !product.imageUri.isEmpty()) {
-                binding.productImage.setImageURI(Uri.parse(product.imageUri));
+                if (RemoteImageLoader.isRemote(product.imageUri)) {
+                    RemoteImageLoader.load(binding.productImage, product.imageUri);
+                } else {
+                    binding.productImage.setImageURI(Uri.parse(product.imageUri));
+                }
                 binding.productImage.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
             } else {
                 binding.productImage.setImageResource(R.drawable.ic_storefront);

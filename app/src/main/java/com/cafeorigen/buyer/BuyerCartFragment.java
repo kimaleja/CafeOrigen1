@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
 import com.cafeorigen.admin.MoneyFormat;
+import com.cafeorigen.core.data.CartRepository;
 import com.cafeorigen.databinding.FragmentBuyerCartBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -53,6 +54,14 @@ public class BuyerCartFragment extends Fragment implements BuyerCartAdapter.List
         viewModel.getLines().observe(getViewLifecycleOwner(), lines -> {
             adapter.submitList(lines);
             refreshFooter(lines);
+        });
+
+        // Con carrito persistente (Firestore) la carga llega después de abrir
+        // la pantalla: se repinta cuando el repositorio avisa del cambio.
+        CartRepository.get().setOnChangedListener(() -> {
+            if (viewModel != null) {
+                viewModel.refresh();
+            }
         });
     }
 
@@ -121,6 +130,7 @@ public class BuyerCartFragment extends Fragment implements BuyerCartAdapter.List
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        CartRepository.get().setOnChangedListener(null);
         binding = null;
     }
 }

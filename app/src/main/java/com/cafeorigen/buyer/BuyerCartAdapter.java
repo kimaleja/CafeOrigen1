@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cafeorigen.R;
 import com.cafeorigen.admin.MoneyFormat;
+import com.cafeorigen.core.ui.RemoteImageLoader;
 import com.cafeorigen.databinding.ItemBuyerCartBinding;
 
 /**
@@ -84,9 +85,13 @@ public class BuyerCartAdapter extends ListAdapter<BuyerCartViewModel.CartLine,
             binding.cartQtyText.setText(String.valueOf(line.units));
             binding.cartSubtotalText.setText(MoneyFormat.cop(line.subtotal));
 
-            // Imagen de galería o ícono de fábrica
+            // Imagen de galería, URL de Storage o ícono de fábrica
             if (line.product.imageUri != null && !line.product.imageUri.isEmpty()) {
-                binding.cartImage.setImageURI(Uri.parse(line.product.imageUri));
+                if (RemoteImageLoader.isRemote(line.product.imageUri)) {
+                    RemoteImageLoader.load(binding.cartImage, line.product.imageUri);
+                } else {
+                    binding.cartImage.setImageURI(Uri.parse(line.product.imageUri));
+                }
                 binding.cartImage.setScaleType(
                         android.widget.ImageView.ScaleType.CENTER_CROP);
             } else {

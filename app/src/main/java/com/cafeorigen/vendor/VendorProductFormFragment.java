@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
 import com.cafeorigen.core.data.MockDataProvider;
+import com.cafeorigen.core.ui.RemoteImageLoader;
 import com.cafeorigen.core.data.SessionManager;
 import com.cafeorigen.core.model.Product;
 import com.cafeorigen.core.model.ProductCategory;
@@ -309,7 +310,11 @@ public class VendorProductFormFragment extends Fragment {
         }
         if (editing.imageUri != null && !editing.imageUri.isEmpty()) {
             selectedImageUri = editing.imageUri;
-            binding.productFormImage.setImageURI(Uri.parse(editing.imageUri));
+            if (RemoteImageLoader.isRemote(editing.imageUri)) {
+                RemoteImageLoader.load(binding.productFormImage, editing.imageUri);
+            } else {
+                binding.productFormImage.setImageURI(Uri.parse(editing.imageUri));
+            }
         }
     }
 

@@ -19,6 +19,7 @@ import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
 import com.cafeorigen.core.data.MockDataProvider;
 import com.cafeorigen.core.data.SessionManager;
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 import com.cafeorigen.core.model.User;
 import com.cafeorigen.databinding.FragmentLoginBinding;
 
@@ -156,10 +157,15 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                // Restaura la sesión del último usuario local; nunca se simula la huella.
-                User lastUser = MockDataProvider.findById(SessionManager.get(requireContext()).getLastUserId());
+                // Restaura la sesión del último usuario; nunca se simula la huella.
+                // En modo Firebase la identidad queda cacheada en SessionManager
+                // (el SDK conserva la sesión); en modo mock se usa el seed local.
+                SessionManager session = SessionManager.get(requireContext());
+                User lastUser = FirebaseBootstrap.isConfigured()
+                        ? session.restoreLastUser()
+                        : MockDataProvider.findById(session.getLastUserId());
                 if (lastUser != null) {
-                    SessionManager.get(requireContext()).startSession(lastUser);
+                    session.startSession(lastUser);
                     Toast.makeText(requireContext(), R.string.biometric_ok, Toast.LENGTH_SHORT).show();
                     goToMain();
                 }

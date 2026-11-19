@@ -112,6 +112,7 @@
     <string name="recovery_code_wrong">El código no es correcto. Revisa e intenta de nuevo.</string>
     <string name="recovery_code_invalid">El código debe tener 6 números.</string>
     <string name="recovery_success">Contraseña restablecida. Ingresa con tu nueva contraseña.</string>
+    <string name="recovery_email_sent">Te enviamos un correo con el enlace para restablecer tu contraseña. Revisa tu bandeja (y la carpeta de spam).</string>
     <string name="recovery_back_cd">Volver al login</string>
 
     <!-- Registro -->

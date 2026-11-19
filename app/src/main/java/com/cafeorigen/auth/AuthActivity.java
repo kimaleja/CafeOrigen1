@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.cafeorigen.R;
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 
 /**
  * CafeOrigen — Contenedor del flujo de autenticación (T2/T3/T6).
@@ -20,6 +21,8 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        // Garantiza la detección de Firebase aunque se entre directo a Auth.
+        FirebaseBootstrap.init(this);
     }
 
     /** Reemplaza el fragmento actual del contenedor de autenticación. */

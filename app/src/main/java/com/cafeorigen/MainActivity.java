@@ -20,7 +20,9 @@ import com.cafeorigen.buyer.BuyerCatalogFragment;
 import com.cafeorigen.buyer.BuyerHomeFragment;
 import com.cafeorigen.buyer.BuyerOrdersFragment;
 import com.cafeorigen.buyer.BuyerProfileFragment;
+import com.cafeorigen.core.data.CartRepository;
 import com.cafeorigen.core.data.SessionManager;
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 import com.cafeorigen.core.model.ProductCategory;
 import com.cafeorigen.core.model.Role;
 import com.cafeorigen.databinding.ActivityMainBinding;
@@ -54,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Firebase se inicializa una sola vez por proceso; sin google-services.json
+        // queda en modo mock y nada de lo siguiente cambia el comportamiento.
+        FirebaseBootstrap.init(this);
+
         // Guardia anti acceso sin sesión
         SessionManager session = SessionManager.get(this);
         if (!session.isLoggedIn()) {
@@ -61,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        // Carrito persistente del usuario (si Firebase está activo).
+        CartRepository.get().attach(session.getUserId());
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
