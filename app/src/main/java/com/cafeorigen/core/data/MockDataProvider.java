@@ -181,9 +181,28 @@ public final class MockDataProvider {
     /** Creación con rol explícito (usado por el Administrador, A3). */
     public static User addUserWithRole(String name, String email, String phone,
                                        String password, Role role) {
-        User user = new User("U-" + SEQ.incrementAndGet(), name, email, phone, password, role);
+        User user = new User(nextUserId(), name, email, phone, password, role);
         USERS.add(user);
         return user;
+    }
+
+    /**
+     * Siguiente id libre para una cuenta. Se calcula sobre las cuentas
+     * existentes (incluidas las de semilla) para no reutilizar ids, que
+     * harían que editar una cuenta modificara otra.
+     */
+    private static synchronized String nextUserId() {
+        int max = 1000;
+        for (User user : USERS) {
+            if (user.id != null && user.id.startsWith("U-")) {
+                try {
+                    max = Math.max(max, Integer.parseInt(user.id.substring(2)));
+                } catch (NumberFormatException ignored) {
+                    // Id no numérico: no participa en el máximo.
+                }
+            }
+        }
+        return "U-" + (max + 1);
     }
 
     /** Actualiza un usuario manteniendo su id (edición A4). */

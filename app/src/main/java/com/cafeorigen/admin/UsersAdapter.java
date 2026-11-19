@@ -29,6 +29,8 @@ public class UsersAdapter extends ListAdapter<User, UsersAdapter.Holder> {
         void onEdit(User user);
 
         void onDelete(User user);
+
+        void onActivate(User user);
     }
 
     private final Listener listener;
@@ -104,6 +106,10 @@ public class UsersAdapter extends ListAdapter<User, UsersAdapter.Holder> {
                 PopupMenu menu = new PopupMenu(context, v);
                 menu.getMenuInflater().inflate(
                         R.menu.menu_overflow_user, menu.getMenu());
+                // Las acciones destructivas solo aplican a cuentas activas y la
+                // reactivación solo a las inactivas.
+                menu.getMenu().findItem(R.id.action_user_delete).setVisible(user.active);
+                menu.getMenu().findItem(R.id.action_user_activate).setVisible(!user.active);
                 menu.setOnMenuItemClickListener(item -> {
                     int id = item.getItemId();
                     if (id == R.id.action_user_edit) {
@@ -112,6 +118,10 @@ public class UsersAdapter extends ListAdapter<User, UsersAdapter.Holder> {
                     }
                     if (id == R.id.action_user_delete) {
                         listener.onDelete(user);
+                        return true;
+                    }
+                    if (id == R.id.action_user_activate) {
+                        listener.onActivate(user);
                         return true;
                     }
                     return false;

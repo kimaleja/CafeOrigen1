@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- CafeOrigen — Navegación inferior del Administrador (5 destinos) -->
+<!-- CafeOrigen - Navegación inferior del Administrador (4 destinos) -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
@@ -18,13 +18,8 @@
         android:title="@string/tab_productos" />
 
     <item
-        android:id="@+id/nav_pedidos"
-        android:icon="@drawable/ic_receipt"
-        android:title="@string/tab_pedidos" />
-
-    <item
-        android:id="@+id/nav_perfil"
-        android:icon="@drawable/ic_person"
-        android:title="@string/tab_perfil" />
+        android:id="@+id/nav_reporte"
+        android:icon="@drawable/ic_assignment"
+        android:title="@string/tab_reporte" />
 
 </menu>

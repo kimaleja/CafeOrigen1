@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
+import com.cafeorigen.core.data.SessionManager;
 import com.cafeorigen.core.model.Role;
 import com.cafeorigen.core.model.User;
 import com.cafeorigen.databinding.FragmentAdminUserListBinding;
@@ -99,8 +100,21 @@ public class AdminUserListFragment extends Fragment implements UsersAdapter.List
                             getString(R.string.users_deleted_fmt, String.valueOf(state.userName)),
                             Snackbar.LENGTH_LONG).show();
                     break;
+                case ACTIVATED:
+                    Snackbar.make(binding.usersFab,
+                            getString(R.string.users_activated_fmt, String.valueOf(state.userName)),
+                            Snackbar.LENGTH_LONG).show();
+                    break;
+                case LAST_ADMIN:
+                    Snackbar.make(binding.usersFab, R.string.users_last_admin_error,
+                            Snackbar.LENGTH_LONG).show();
+                    break;
+                case LOAD_ERROR:
+                    Toast.makeText(requireContext(), R.string.admin_data_load_error,
+                            Toast.LENGTH_SHORT).show();
+                    break;
                 case ERROR:
-                    Toast.makeText(requireContext(), R.string.form_saved_error,
+                    Toast.makeText(requireContext(), R.string.admin_op_error,
                             Toast.LENGTH_SHORT).show();
                     break;
                 default:
@@ -137,6 +151,11 @@ public class AdminUserListFragment extends Fragment implements UsersAdapter.List
 
     @Override
     public void onDelete(User user) {
+        if (isCurrentUser(user)) {
+            Snackbar.make(binding.usersFab, R.string.users_delete_self_error,
+                    Snackbar.LENGTH_LONG).show();
+            return;
+        }
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.users_delete_title)
                 .setMessage(getString(R.string.users_delete_msg_fmt,
@@ -145,6 +164,23 @@ public class AdminUserListFragment extends Fragment implements UsersAdapter.List
                         viewModel.setUserActive(user, false))
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    @Override
+    public void onActivate(User user) {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.users_activate_title)
+                .setMessage(getString(R.string.users_activate_msg_fmt,
+                        String.valueOf(user.name)))
+                .setPositiveButton(R.string.users_menu_activate, (dialog, which) ->
+                        viewModel.setUserActive(user, true))
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private boolean isCurrentUser(User user) {
+        String currentId = SessionManager.get(requireContext()).getUserId();
+        return user.id != null && user.id.equals(currentId);
     }
 
     @Override

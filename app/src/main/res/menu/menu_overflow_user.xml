@@ -10,4 +10,8 @@
         android:id="@+id/action_user_delete"
         android:title="@string/users_menu_delete" />
 
+    <item
+        android:id="@+id/action_user_activate"
+        android:title="@string/users_menu_activate" />
+
 </menu>

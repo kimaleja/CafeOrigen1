@@ -221,3 +221,56 @@ enrolamiento y enrolar exige interacción en Ajustes) y bloqueo por intentos
 (`LOCKOUT`), que requieren un dispositivo con huella. El código de esos caminos
 usa exclusivamente las APIs oficiales y se validó por revisión; no se simula la
 autenticación en ningún caso.
+
+## 21. Adenda — Módulo Administrador completo (18/11/2026)
+
+Cierre de las ocho pantallas del rol ADMINISTRADOR (A1–A8) sobre la base
+existente, sin crear un proyecto nuevo ni rehacer el diseño. Cada pantalla
+mantiene su layout y componentes personalizados (`KpiCardView`, `RowItemView`,
+`EmptyStateView`, `BarChartView`).
+
+| # | Pantalla | Estado |
+|---|---|---|
+| A1 | Dashboard con indicadores y resumen | ✅ KPIs, gráfico y alertas reales |
+| A2 | Gestión de usuarios (hub con resumen y accesos) | ✅ nueva pantalla |
+| A3 | Listado con búsqueda, filtro por rol y menú por fila | ✅ |
+| A4 | Creación con validaciones | ✅ |
+| A5 | Edición con correo bloqueado y contraseña protegida | ✅ |
+| A6 | Eliminación con confirmación y reactivación | ✅ |
+| A7 | Moderación de productos con confirmación | ✅ |
+| A8 | Reporte 7/30/365 días con exportación CSV confirmada | ✅ |
+
+Hallazgos cerrados en esta fase:
+
+| # | Hallazgo | Corrección |
+|---|---|---|
+| 1 | El formulario de edición leía `MockDataProvider.findById` directamente desde la UI | Nuevo `AdminDataRepository.getUser(id, callback)` (mock o Firestore) + `AdminUsersViewModel.loadUser` |
+| 2 | No existía pantalla de entrada para la sección de usuarios | `AdminUserManagementFragment` + `fragment_admin_user_management.xml` con KPIs total/activas/inactivas |
+| 3 | Un admin podía desactivar su propia cuenta o dejar la plataforma sin administradores | Guardas de auto-desactivación y de último administrador activo en `AdminUsersViewModel` |
+| 4 | Una cuenta desactivada no podía recuperarse | Acción "Reactivar cuenta" (`action_user_activate`, `OpsStatus.ACTIVATED`) con confirmación |
+| 5 | El rechazo de producto se ejecutaba sin confirmación | Diálogo de confirmación en `AdminProductListFragment.onReject` |
+| 6 | La exportación CSV se compartía al primer toque | Diálogo de confirmación antes de generar el archivo |
+| 7 | El dashboard mostraba una alerta de inactivos con valor fijo 0 | `DashboardStats.inactiveUsers` calculado en mock y Firestore |
+| 8 | Los fallos de carga se mostraban como "sin datos" | Estados `LOAD_ERROR` y mensajes `admin_data_load_error`, `admin_op_error`, `report_load_error`, `dash_load_error` |
+| 9 | Tab "Reporte" y accesos del dashboard apuntaban a módulos inexistentes | Menú admin de 4 destinos (`nav_reporte`) y navegación al hub de usuarios |
+| 10 | Los ids de usuario nuevos podían duplicarse con los de semilla | `nextUserId()` calcula el siguiente id sobre las cuentas existentes |
+
+Verificación en emulador API 37 (`adb`, `uiautomator`, `screencap`):
+
+| Caso | Resultado |
+|---|---|
+| Login admin y dashboard con KPIs + alerta real de inactivos | ✅ |
+| Tab Usuarios → hub con resumen y accesos | ✅ |
+| Listado: búsqueda y filtros por rol | ✅ |
+| Validaciones de creación (campos vacíos, correo, contraseña, rol) | ✅ |
+| Crear usuario y verlo en la lista | ✅ |
+| Editar: correo bloqueado y contraseña oculta | ✅ |
+| Desactivar con confirmación y reactivar | ✅ |
+| Guarda al intentar desactivar la propia cuenta | ✅ |
+| Rechazar producto con confirmación | ✅ |
+| Reporte 7/30 días y confirmación de exportación CSV | ✅ |
+| Compilación tras los cambios | ✅ `assembleDebug` · APK 11.723.814 bytes |
+| Android Lint | ✅ 0 errores · 84 warnings (pantallas demo y textos de ejemplo) |
+
+**No verificado:** el flujo contra un proyecto Firebase real sigue pendiente de
+las credenciales de la cuenta (`app/google-services.json`, ver §17.6).

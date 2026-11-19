@@ -20,7 +20,7 @@ import java.util.List;
 public class AdminUsersViewModel extends ViewModel {
 
     /** Códigos de operación para snacks/mensajes. */
-    public enum OpsStatus { IDLE, SAVED, DELETED, EMAIL_TAKEN, ERROR }
+    public enum OpsStatus { IDLE, SAVED, DELETED, ACTIVATED, EMAIL_TAKEN, LAST_ADMIN, LOAD_ERROR, ERROR }
 
     public static class OpsState {
         public final OpsStatus status;
@@ -55,6 +55,7 @@ public class AdminUsersViewModel extends ViewModel {
     private final MutableLiveData<List<User>> visibleUsers = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<OpsState> opsState = new MutableLiveData<>(new OpsState(OpsStatus.IDLE, null));
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
+    private final MutableLiveData<User> editingUser = new MutableLiveData<>(null);
 
     private List<User> fullList = new ArrayList<>();
     private Role roleFilter; // null = Todos
@@ -62,6 +63,10 @@ public class AdminUsersViewModel extends ViewModel {
 
     public LiveData<List<User>> getVisibleUsers() {
         return visibleUsers;
+    }
+
+    public LiveData<User> getEditingUser() {
+        return editingUser;
     }
 
     public LiveData<OpsState> getOpsState() {
@@ -80,7 +85,21 @@ public class AdminUsersViewModel extends ViewModel {
                 fullList = new ArrayList<>(result.data);
                 applyFilter();
             } else {
-                opsState.setValue(new OpsState(OpsStatus.ERROR, null));
+                opsState.setValue(new OpsState(OpsStatus.LOAD_ERROR, null));
+            }
+        });
+    }
+
+    /** Carga una cuenta concreta para el formulario de edición (A4). */
+    public void loadUser(String userId) {
+        loading.setValue(true);
+        repository.getUser(userId, result -> {
+            loading.setValue(false);
+            if (result.isSuccess()) {
+                editingUser.setValue(result.data);
+            } else {
+                editingUser.setValue(null);
+                opsState.setValue(new OpsState(OpsStatus.LOAD_ERROR, null));
             }
         });
     }
@@ -130,18 +149,34 @@ public class AdminUsersViewModel extends ViewModel {
         });
     }
 
-    /** Borrado lógico (mantener historial). */
+    /** Borrado lógico / reactivación (A5). */
     public void setUserActive(User user, boolean active) {
+        // Regla de negocio: la plataforma no puede quedarse sin administradores.
+        if (!active && user.role == Role.ADMINISTRADOR && !fullList.isEmpty()
+                && countActiveAdmins() <= 1) {
+            opsState.setValue(new OpsState(OpsStatus.LAST_ADMIN, user.name));
+            return;
+        }
         loading.setValue(true);
         repository.setUserActive(user.id, active, result -> {
             loading.setValue(false);
             if (result.isSuccess()) {
-                opsState.setValue(new OpsState(active ? OpsStatus.SAVED : OpsStatus.DELETED,
+                opsState.setValue(new OpsState(active ? OpsStatus.ACTIVATED : OpsStatus.DELETED,
                         result.data.name));
                 load();
             } else {
                 opsState.setValue(new OpsState(OpsStatus.ERROR, null));
             }
         });
+    }
+
+    private int countActiveAdmins() {
+        int count = 0;
+        for (User user : fullList) {
+            if (user.role == Role.ADMINISTRADOR && user.active) {
+                count++;
+            }
+        }
+        return count;
     }
 }

@@ -29,6 +29,7 @@ public class AdminProductListFragment extends Fragment implements AdminProductsA
     private AdminProductsViewModel viewModel;
     private FragmentAdminProductsBinding binding;
     private AdminProductsAdapter adapter;
+    private ProductStatus currentStatus; // null = Todos
 
     @Nullable
     @Override
@@ -65,6 +66,7 @@ public class AdminProductListFragment extends Fragment implements AdminProductsA
             } else if (checked == R.id.chip_products_draft) {
                 status = ProductStatus.BORRADOR;
             }
+            currentStatus = status;
             viewModel.setStatusFilter(status);
         });
 
@@ -86,8 +88,13 @@ public class AdminProductListFragment extends Fragment implements AdminProductsA
                             getString(R.string.product_deleted_fmt, String.valueOf(state.productName)),
                             Snackbar.LENGTH_SHORT).show();
                     break;
+                case LOAD_ERROR:
+                    Toast.makeText(requireContext(), R.string.admin_data_load_error,
+                            Toast.LENGTH_SHORT).show();
+                    break;
                 case ERROR:
-                    Toast.makeText(requireContext(), R.string.form_saved_error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), R.string.admin_op_error,
+                            Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -102,7 +109,9 @@ public class AdminProductListFragment extends Fragment implements AdminProductsA
             binding.productsRecycler.setVisibility(empty ? View.GONE : View.VISIBLE);
             if (empty) {
                 binding.productsEmptyState.setTitle(getString(R.string.products_empty_title));
-                binding.productsEmptyState.setMessage(getString(R.string.products_empty_msg));
+                binding.productsEmptyState.setMessage(getString(currentStatus == null
+                        ? R.string.products_empty_all_msg
+                        : R.string.products_empty_msg));
             }
         });
 
@@ -123,7 +132,14 @@ public class AdminProductListFragment extends Fragment implements AdminProductsA
 
     @Override
     public void onReject(Product product) {
-        viewModel.reject(product);
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.product_reject_title)
+                .setMessage(getString(R.string.product_reject_msg_fmt,
+                        String.valueOf(product.name), String.valueOf(product.vendorName)))
+                .setPositiveButton(R.string.action_reject, (dialog, which) ->
+                        viewModel.reject(product))
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 
     @Override

@@ -49,6 +49,13 @@ public final class FirebaseReportDataSource {
                 return;
             }
             final int usersCount = sizeOf(usersTask.getResult());
+            int inactiveUsers = 0;
+            for (DocumentSnapshot doc : usersTask.getResult().getDocuments()) {
+                if (Boolean.FALSE.equals(doc.getBoolean(FirestoreSchema.ACTIVE))) {
+                    inactiveUsers++;
+                }
+            }
+            final int inactiveCount = inactiveUsers;
             db.collection(FirestoreSchema.PRODUCTS).get().addOnCompleteListener(productsTask -> {
                 if (!productsTask.isSuccessful()) {
                     cb.onResult(UserRepository.Result.failure(
@@ -89,7 +96,7 @@ public final class FirebaseReportDataSource {
                     }
                     cb.onResult(UserRepository.Result.success(
                             new AdminDataRepository.DashboardStats(revenueMonth, usersCount,
-                                    products.size(), pending.size(), lowStock, pending,
+                                    inactiveCount, products.size(), pending.size(), lowStock, pending,
                                     weekly)));
                 });
             });

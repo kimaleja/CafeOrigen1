@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class AdminProductsViewModel extends ViewModel {
 
-    public enum OpsStatus { IDLE, APPROVED, REJECTED, DELETED, ERROR }
+    public enum OpsStatus { IDLE, APPROVED, REJECTED, DELETED, LOAD_ERROR, ERROR }
 
     public static class OpsState {
         public final OpsStatus status;
@@ -61,7 +61,7 @@ public class AdminProductsViewModel extends ViewModel {
                 fullList = new ArrayList<>(result.data);
                 applyFilter();
             } else {
-                opsState.setValue(new OpsState(OpsStatus.ERROR, null));
+                opsState.setValue(new OpsState(OpsStatus.LOAD_ERROR, null));
             }
         });
     }

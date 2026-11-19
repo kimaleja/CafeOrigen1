@@ -16,6 +16,8 @@ import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
 import com.cafeorigen.core.data.AdminDataRepository;
 import com.cafeorigen.databinding.FragmentAdminReportBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * CafeOrigen — Reporte de ventas (A7).
@@ -83,12 +85,37 @@ public class AdminReportFragment extends Fragment {
                 binding.reportProgress.setVisibility(Boolean.TRUE.equals(loading)
                         ? View.VISIBLE : View.GONE));
 
+        // Un fallo de carga no se disfraza de "sin ventas".
+        viewModel.getError().observe(getViewLifecycleOwner(), hasError -> {
+            if (!Boolean.TRUE.equals(hasError)) {
+                return;
+            }
+            binding.reportContentGroup.setVisibility(View.GONE);
+            binding.reportEmptyState.setVisibility(View.VISIBLE);
+            binding.reportEmptyState.setTitle(getString(R.string.report_empty_title));
+            binding.reportEmptyState.setMessage(getString(R.string.report_load_error));
+            Snackbar.make(binding.getRoot(), R.string.report_load_error,
+                    Snackbar.LENGTH_LONG).show();
+        });
+
         // Selecciona el chip de 30 días y dispara la primera carga
         binding.chipReport30.setChecked(true);
     }
 
-    /** Exporta el CSV del reporte con confirmación y comparte por chooser. */
+    /** Confirma y comparte el CSV del reporte actual. */
     private void exportCsv() {
+        if (lastReport == null) {
+            return;
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.report_export_confirm_title)
+                .setMessage(R.string.report_export_confirm_msg)
+                .setPositiveButton(R.string.report_export_csv, (dialog, which) -> shareCsv())
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private void shareCsv() {
         if (lastReport == null) {
             return;
         }

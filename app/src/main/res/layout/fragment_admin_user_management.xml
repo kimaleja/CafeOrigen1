@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CafeOrigen - Gestión de usuarios (entrada de la sección A2).
+  Resumen de cuentas por estado y accesos al listado y a la creación.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16">
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:text="@string/users_management_subtitle" />
+
+        <ProgressBar
+            android:id="@+id/users_manage_progress"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_16"
+            android:indeterminateTint="@color/accent_gold"
+            android:visibility="gone" />
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/dash_section_kpi" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:orientation="horizontal">
+
+            <com.cafeorigen.core.ui.KpiCardView
+                android:id="@+id/users_manage_kpi_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_12"
+                android:layout_weight="1"
+                app:kpiAccentColor="@color/cafe_600"
+                app:kpiIcon="@drawable/ic_group"
+                app:kpiLabel="@string/users_summary_total"
+                app:kpiValue="." />
+
+            <com.cafeorigen.core.ui.KpiCardView
+                android:id="@+id/users_manage_kpi_active"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_12"
+                android:layout_weight="1"
+                app:kpiAccentColor="@color/success"
+                app:kpiIcon="@drawable/ic_check_circle"
+                app:kpiLabel="@string/users_summary_active"
+                app:kpiValue="." />
+
+            <com.cafeorigen.core.ui.KpiCardView
+                android:id="@+id/users_manage_kpi_inactive"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:kpiAccentColor="@color/warning"
+                app:kpiIcon="@drawable/ic_warning"
+                app:kpiLabel="@string/users_summary_inactive"
+                app:kpiValue="." />
+        </LinearLayout>
+
+        <com.cafeorigen.core.ui.EmptyStateView
+            android:id="@+id/users_manage_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:visibility="gone" />
+
+        <TextView
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_24"
+            android:text="@string/dash_section_easy" />
+
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/users_manage_list_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:rowIcon="@drawable/ic_group"
+            app:rowShowChevron="true"
+            app:rowSubtitle="@string/users_management_list_subtitle"
+            app:rowTitle="@string/users_management_list_title" />
+
+        <com.cafeorigen.core.ui.RowItemView
+            android:id="@+id/users_manage_create_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_12"
+            app:rowIcon="@drawable/ic_add"
+            app:rowShowChevron="true"
+            app:rowSubtitle="@string/users_management_create_subtitle"
+            app:rowTitle="@string/users_management_create_title" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_24" />
+    </LinearLayout>
+
+</ScrollView>

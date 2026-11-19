@@ -1,10 +1,13 @@
 package com.cafeorigen.admin;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,20 +17,23 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.cafeorigen.MainActivity;
 import com.cafeorigen.R;
-import com.cafeorigen.core.data.MockDataProvider;
+import com.cafeorigen.core.data.SessionManager;
 import com.cafeorigen.core.model.Role;
 import com.cafeorigen.core.model.User;
 import com.cafeorigen.core.util.Validators;
 import com.cafeorigen.databinding.FragmentAdminUserFormBinding;
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * CafeOrigen — Formulario de usuario compartido por Crear (A3) y Editar (A4).
- * Lee el argumento userId; si viene, precarga y muestra el switch de estado.
- * Contiene validaciones de campos en el propio formulario.
+ * Lee el argumento userId; si viene, carga la cuenta desde el repositorio
+ * (mock o Firestore) y muestra el switch de estado. Las validaciones viven
+ * aquí y la persistencia en AdminUsersViewModel.
  */
 public class UserFormFragment extends Fragment {
 
     private static final String ARG_USER_ID = "userId";
+    private static final String STATE_ROLE = "selectedRole";
 
     private FragmentAdminUserFormBinding binding;
     private AdminUsersViewModel viewModel;
@@ -64,15 +70,35 @@ public class UserFormFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((MainActivity) requireActivity()).setToolbarTitle(
                 getString(userId == null ? R.string.form_title_create : R.string.form_title_edit));
-        viewModel = new ViewModelProvider(requireActivity()).get(AdminUsersViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AdminUsersViewModel.class);
 
         setupRoleDropdown();
         setupBack();
         setupSubmit();
+        setupErrorClearing();
         observeOps();
+        observeLoading();
+
+        // El rol elegido sobrevive a una rotación de pantalla.
+        if (savedInstanceState != null) {
+            String savedRole = savedInstanceState.getString(STATE_ROLE);
+            if (savedRole != null) {
+                try {
+                    setupRoleDefault(Role.valueOf(savedRole));
+                } catch (IllegalArgumentException ignored) {
+                    // Rol inválido en el estado guardado: se elige de nuevo.
+                }
+            }
+        }
 
         if (userId != null) {
-            fillEditMode();
+            prepareEditMode();
+            viewModel.getEditingUser().observe(getViewLifecycleOwner(), user -> {
+                if (user != null && user.id != null && user.id.equals(userId)) {
+                    fillEditMode(user);
+                }
+            });
+            viewModel.loadUser(userId);
         }
     }
 
@@ -90,6 +116,32 @@ public class UserFormFragment extends Fragment {
         binding.userFormBack.setOnClickListener(v -> popBack());
     }
 
+    /** Quita el error de un campo en cuanto la persona empieza a corregirlo. */
+    private void setupErrorClearing() {
+        clearErrorOnType(binding.userFormNameInput, binding.userFormNameEdit);
+        clearErrorOnType(binding.userFormEmailInput, binding.userFormEmailEdit);
+        clearErrorOnType(binding.userFormPhoneInput, binding.userFormPhoneEdit);
+        clearErrorOnType(binding.userFormPasswordInput, binding.userFormPasswordEdit);
+        clearErrorOnType(binding.userFormRoleInput, binding.userFormRoleInputEdit);
+    }
+
+    private void clearErrorOnType(TextInputLayout layout, EditText edit) {
+        edit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                layout.setError(null);
+            }
+        });
+    }
+
     private void setupSubmit() {
         binding.userFormSaveButton.setOnClickListener(v -> submit());
         binding.userFormCancelButton.setOnClickListener(v -> popBack());
@@ -103,15 +155,12 @@ public class UserFormFragment extends Fragment {
                 String.valueOf(binding.userFormNameEdit.getText()).trim(),
                 String.valueOf(binding.userFormEmailEdit.getText()).trim(),
                 String.valueOf(binding.userFormPhoneEdit.getText()).trim(),
-                String.valueOf(binding.userFormPasswordEdit.getText()),
+                // En edición la contraseña no se envía: se gestiona por recuperación.
+                userId == null ? String.valueOf(binding.userFormPasswordEdit.getText()) : "",
                 selectedRole,
                 binding.userFormActiveSwitch.isChecked());
 
-        if (userId == null) {
-            viewModel.save(draft, null, true);
-        } else {
-            viewModel.save(draft, userId, false);
-        }
+        viewModel.save(draft, userId, userId == null);
     }
 
     /** Validaciones de formulario con errores por campo. */
@@ -146,10 +195,6 @@ public class UserFormFragment extends Fragment {
                 binding.userFormPasswordInput.setError(getString(R.string.login_error_short_password));
                 valid = false;
             }
-        } else if (Validators.notEmpty(password) && !Validators.isValidPassword(password)) {
-            // En edición solo se valida si el administrador la cambia.
-            binding.userFormPasswordInput.setError(getString(R.string.login_error_short_password));
-            valid = false;
         }
         if (selectedRole == null) {
             binding.userFormRoleInput.setError(getString(R.string.form_error_role));
@@ -171,19 +216,45 @@ public class UserFormFragment extends Fragment {
         binding.userFormRoleInputEdit.setText(role.getLabel(), false);
     }
 
-    private void fillEditMode() {
-        User user = MockDataProvider.findById(userId);
-        if (user == null) {
-            Toast.makeText(requireContext(), R.string.form_saved_error, Toast.LENGTH_SHORT).show();
-            popBack();
-            return;
-        }
+    /**
+     * En edición el correo identifica la cuenta (en Firebase, el email de Auth
+     * no se puede cambiar desde el panel) y la contraseña se restablece desde
+     * el login. Se informa al administrador en lugar de ignorar datos.
+     */
+    private void prepareEditMode() {
+        binding.userFormEmailInput.setEnabled(false);
+        binding.userFormEmailInput.setHelperText(getString(R.string.form_email_locked_helper));
+        binding.userFormPasswordInput.setVisibility(View.GONE);
+        binding.userFormPasswordHint.setVisibility(View.VISIBLE);
+        binding.userFormActiveSwitch.setVisibility(View.VISIBLE);
+    }
+
+    private void fillEditMode(User user) {
         binding.userFormNameEdit.setText(user.name);
         binding.userFormEmailEdit.setText(user.email);
         binding.userFormPhoneEdit.setText(user.phone);
         setupRoleDefault(user.role);
         binding.userFormActiveSwitch.setChecked(user.active);
-        binding.userFormActiveSwitch.setVisibility(View.VISIBLE);
+
+        // Un administrador no puede quitarse a sí mismo el acceso.
+        boolean editingSelf = user.id != null
+                && user.id.equals(SessionManager.get(requireContext()).getUserId());
+        if (editingSelf) {
+            binding.userFormRoleInput.setEnabled(false);
+            binding.userFormActiveSwitch.setEnabled(false);
+            binding.userFormSelfNotice.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void observeLoading() {
+        viewModel.getLoading().observe(getViewLifecycleOwner(), loading -> {
+            boolean busy = Boolean.TRUE.equals(loading);
+            if (binding == null) {
+                return;
+            }
+            binding.userFormProgress.setVisibility(busy ? View.VISIBLE : View.GONE);
+            binding.userFormSaveButton.setEnabled(!busy);
+        });
     }
 
     private void observeOps() {
@@ -198,6 +269,11 @@ public class UserFormFragment extends Fragment {
                 case EMAIL_TAKEN:
                     binding.userFormEmailInput.setError(getString(R.string.users_email_taken));
                     break;
+                case LOAD_ERROR:
+                    Toast.makeText(requireContext(), R.string.form_load_error,
+                            Toast.LENGTH_LONG).show();
+                    popBack();
+                    break;
                 case ERROR:
                     Toast.makeText(requireContext(), R.string.form_saved_error,
                             Toast.LENGTH_SHORT).show();
@@ -210,6 +286,14 @@ public class UserFormFragment extends Fragment {
 
     private void popBack() {
         getParentFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (selectedRole != null) {
+            outState.putString(STATE_ROLE, selectedRole.name());
+        }
     }
 
     @Override

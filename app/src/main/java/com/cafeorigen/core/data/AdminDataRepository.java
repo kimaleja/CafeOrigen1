@@ -70,17 +70,19 @@ public final class AdminDataRepository {
     public static final class DashboardStats {
         public final long revenueMonth;
         public final int usersCount;
+        public final int inactiveUsers;
         public final int productsCount;
         public final int pendingModeration;
         public final List<Product> lowStock;
         public final List<Product> pendingList;
         public final float[] weeklyChart; // índice 0 = día más antiguo de la semana
 
-        public DashboardStats(long revenue, int users, int products, int pending,
+        public DashboardStats(long revenue, int users, int inactiveUsers, int products, int pending,
                               List<Product> lowStock, List<Product> pendingList,
                               float[] weeklyChart) {
             this.revenueMonth = revenue;
             this.usersCount = users;
+            this.inactiveUsers = inactiveUsers;
             this.productsCount = products;
             this.pendingModeration = pending;
             this.lowStock = lowStock;
@@ -133,6 +135,20 @@ public final class AdminDataRepository {
             return;
         }
         async(() -> UserRepository.Result.success(MockDataProvider.users()), callback);
+    }
+
+    /** Lee una cuenta concreta para editarla sin acceder al mock desde la UI. */
+    public void getUser(final String userId, UserRepository.Callback<User> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseUserDataSource.get().fetchProfile(userId, callback);
+            return;
+        }
+        async(() -> {
+            User user = MockDataProvider.findById(userId);
+            return user == null
+                    ? UserRepository.Result.<User>failure("not_found")
+                    : UserRepository.Result.success(user);
+        }, callback);
     }
 
     /** Crea usuario con rol (A3) o actualiza existente (A4). */
@@ -265,8 +281,15 @@ public final class AdminDataRepository {
                 }
             }
 
-            DashboardStats stats = new DashboardStats(revenueMonth, users.size(), products.size(),
-                    pending, lowStock, pendingList, weeklyChart);
+            int inactiveUsers = 0;
+            for (User user : users) {
+                if (!user.active) {
+                    inactiveUsers++;
+                }
+            }
+
+            DashboardStats stats = new DashboardStats(revenueMonth, users.size(), inactiveUsers,
+                    products.size(), pending, lowStock, pendingList, weeklyChart);
             return UserRepository.Result.success(stats);
         }, callback);
     }

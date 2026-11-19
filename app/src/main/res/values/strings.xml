@@ -157,6 +157,7 @@
     <string name="admin_orders_title">Pedidos</string>
     <string name="admin_profile_title">Perfil</string>
     <string name="admin_report_title">Reporte de ventas</string>
+    <string name="tab_reporte">Reporte</string>
 
     <!-- Dashboard A1 -->
     <string name="dash_greeting_fmt">Hola, %1$s 👋</string>
@@ -171,12 +172,26 @@
     <string name="dash_row_report_subtitle">Ventas, unidades y exportación CSV</string>
     <string name="dash_alert_pending_fmt">%1$d café(s) esperan moderación</string>
     <string name="dash_alert_lowstock_fmt">Stock bajo: %1$d producto(s) activos</string>
-    <string name="dash_alert_inactive_fmt">Hay cuentas inactivas por revisar</string>
+    <string name="dash_alert_inactive_fmt">%1$d cuenta(s) inactivas por revisar</string>
     <string name="dash_chart_title">Ventas últimos 7 días</string>
     <string name="dash_no_alerts">Sin alertas por ahora. Todo al día ✅</string>
     <string name="dash_value_cop_fmt">$%1$s</string>
     <string name="dash_value_millions_fmt">$%1$.1fM</string>
+    <string name="dash_load_error">No se pudieron cargar los indicadores. Intenta de nuevo.</string>
     <string name="share_csv_title">Compartir reporte CSV</string>
+
+    <!-- Gestión de usuarios (pantalla de entrada A2) -->
+    <string name="users_management_title">Gestión de usuarios</string>
+    <string name="users_management_subtitle">Administra cuentas, roles y estados desde un solo lugar.</string>
+    <string name="users_summary_total">Total de cuentas</string>
+    <string name="users_summary_active">Cuentas activas</string>
+    <string name="users_summary_inactive">Cuentas inactivas</string>
+    <string name="users_management_list_title">Listado de usuarios</string>
+    <string name="users_management_list_subtitle">Buscar, filtrar, editar y activar o desactivar cuentas</string>
+    <string name="users_management_create_title">Crear usuario</string>
+    <string name="users_management_create_subtitle">Nueva cuenta con rol y contraseña inicial</string>
+    <string name="users_management_empty_title">Aún no hay cuentas</string>
+    <string name="users_management_empty_msg">Crea la primera cuenta con el acceso rápido de abajo.</string>
 
     <!-- Listado de usuarios A2 -->
     <string name="users_search_hint">Buscar por nombre o correo…</string>
@@ -194,11 +209,17 @@
     <string name="users_state_inactive">Inactivo</string>
     <string name="users_menu_edit">Editar usuario</string>
     <string name="users_menu_delete">Eliminar / desactivar</string>
+    <string name="users_menu_activate">Reactivar cuenta</string>
     <string name="users_delete_title">Eliminar usuario</string>
     <string name="users_delete_msg_fmt">¿Desactivar la cuenta de %1$s? Ya no podrá iniciar sesión (borrado lógico).</string>
     <string name="users_saved_fmt">Usuario guardado: %1$s</string>
     <string name="users_deleted_fmt">Cuenta desactivada: %1$s</string>
+    <string name="users_activated_fmt">Cuenta reactivada: %1$s</string>
     <string name="users_email_taken">El correo ya está en uso por otra cuenta.</string>
+    <string name="users_delete_self_error">No puedes desactivar tu propia cuenta.</string>
+    <string name="users_last_admin_error">Debe existir al menos un administrador activo.</string>
+    <string name="users_activate_title">Reactivar cuenta</string>
+    <string name="users_activate_msg_fmt">¿Reactivar la cuenta de %1$s? Podrá iniciar sesión de nuevo.</string>
 
     <!-- Formulario de usuario A3/A4 (compartido) -->
     <string name="form_title_create">Crear usuario</string>
@@ -210,6 +231,12 @@
     <string name="form_error_role">Selecciona un rol.</string>
     <string name="form_invalid_phone">El teléfono debe tener al menos 7 dígitos.</string>
     <string name="form_saved_error">No se pudo guardar. Intenta de nuevo.</string>
+    <string name="form_load_error">No se pudo cargar la cuenta. Intenta de nuevo.</string>
+    <string name="form_email_locked_helper">El correo identifica la cuenta y no se cambia desde el panel.</string>
+    <string name="form_password_edit_hint">La contraseña no se cambia aquí: el usuario puede restablecerla desde el login.</string>
+    <string name="form_self_protected">No puedes cambiar tu propio rol ni desactivar tu cuenta.</string>
+    <string name="admin_data_load_error">No se pudo cargar la información. Intenta de nuevo.</string>
+    <string name="admin_op_error">No se pudo completar la operación. Intenta de nuevo.</string>
 
     <!-- Moderación de productos A6 -->
     <string name="products_filter_all">Todos</string>
@@ -219,6 +246,7 @@
     <string name="products_filter_draft">Borradores</string>
     <string name="products_empty_title">Sin productos</string>
     <string name="products_empty_msg">No hay cafés en este estado. Cambia de filtro.</string>
+    <string name="products_empty_all_msg">Aún no hay cafés registrados en la plataforma.</string>
     <string name="product_stock_fmt">Stock: %1$d lb</string>
     <string name="product_meta_fmt">%1$s · %2$s · %3$d msnm</string>
     <string name="product_approved_fmt">Café aprobado: %1$s</string>
@@ -226,6 +254,8 @@
     <string name="product_deleted_fmt">Café eliminado: %1$s</string>
     <string name="product_delete_title">Eliminar producto</string>
     <string name="product_delete_msg_fmt">¿Eliminar el café «%1$s» de %2$s? (borrado lógico)</string>
+    <string name="product_reject_title">Rechazar producto</string>
+    <string name="product_reject_msg_fmt">¿Rechazar el café «%1$s» de %2$s? El vendedor verá el estado rechazado.</string>
     <string name="action_approve">Aprobar</string>
     <string name="action_reject">Rechazar</string>
 
@@ -238,8 +268,11 @@
     <string name="report_top_title">Más vendidos</string>
     <string name="report_export_csv">Exportar CSV</string>
     <string name="report_exported">CSV generado. Elige una app para compartirlo.</string>
+    <string name="report_export_confirm_title">Exportar reporte</string>
+    <string name="report_export_confirm_msg">Se generará un CSV con las ventas del periodo elegido. ¿Deseas continuar?</string>
     <string name="report_empty_title">Sin ventas</string>
     <string name="report_empty_msg">No hay ventas registradas en el periodo elegido.</string>
+    <string name="report_load_error">No se pudo calcular el reporte. Intenta de nuevo.</string>
     <string name="report_rank_fmt">#%1$d</string>
     <string name="report_revenue_fmt">$%1$s</string>
 

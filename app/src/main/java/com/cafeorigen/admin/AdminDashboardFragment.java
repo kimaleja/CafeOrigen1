@@ -18,6 +18,7 @@ import com.cafeorigen.core.data.AdminDataRepository;
 import com.cafeorigen.core.data.SessionManager;
 import com.cafeorigen.core.ui.RowItemView;
 import com.cafeorigen.databinding.FragmentAdminDashboardBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * CafeOrigen — Dashboard del Administrador (A1).
@@ -59,6 +60,13 @@ public class AdminDashboardFragment extends Fragment {
                 return;
             }
             bindStats(stats);
+        });
+
+        viewModel.getError().observe(getViewLifecycleOwner(), hasError -> {
+            if (Boolean.TRUE.equals(hasError)) {
+                Snackbar.make(binding.getRoot(), R.string.dash_load_error,
+                        Snackbar.LENGTH_LONG).show();
+            }
         });
 
         viewModel.load();
@@ -111,10 +119,10 @@ public class AdminDashboardFragment extends Fragment {
                     R.string.dash_alert_lowstock_fmt, stats.lowStock.size(), R.color.warning));
             hasAlerts = true;
         }
-        if (stats.usersCount > 0 && SessionManager.get(requireContext()) != null) {
-            // Presencia de cuentas desactivadas (borrado lógico) por revisar
+        if (stats.usersCount > 0 && stats.inactiveUsers > 0) {
+            // Cuentas desactivadas (borrado lógico) que el admin puede reactivar.
             binding.dashAlertsContainer.addView(buildAlert(R.drawable.ic_group,
-                    R.string.dash_alert_inactive_fmt, 0, R.color.info));
+                    R.string.dash_alert_inactive_fmt, stats.inactiveUsers, R.color.info));
             hasAlerts = true;
         }
 
@@ -142,7 +150,7 @@ public class AdminDashboardFragment extends Fragment {
     }
 
     private void openUsers() {
-        ((MainActivity) requireActivity()).openSub(new AdminUserListFragment());
+        ((MainActivity) requireActivity()).openSub(new AdminUserManagementFragment());
     }
 
     private void openProducts() {

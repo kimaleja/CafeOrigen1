@@ -8,7 +8,8 @@ import com.cafeorigen.core.data.AdminDataRepository;
 
 /**
  * CafeOrigen — ViewModel del reporte de ventas (A7).
- * Recarga el agregado cuando cambia el periodo (7/30/365 días).
+ * Recarga el agregado cuando cambia el periodo (7/30/365 días) y expone
+ * el error de carga para no confundirlo con un periodo sin ventas.
  */
 public class AdminReportViewModel extends ViewModel {
 
@@ -19,6 +20,7 @@ public class AdminReportViewModel extends ViewModel {
     private final MutableLiveData<AdminDataRepository.ReportData> report =
             new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> error = new MutableLiveData<>(false);
     private final MutableLiveData<Integer> period = new MutableLiveData<>(PERIOD_30);
 
     private final AdminDataRepository repository = AdminDataRepository.get();
@@ -29,6 +31,10 @@ public class AdminReportViewModel extends ViewModel {
 
     public LiveData<Boolean> getLoading() {
         return loading;
+    }
+
+    public LiveData<Boolean> getError() {
+        return error;
     }
 
     public LiveData<Integer> getPeriod() {
@@ -45,7 +51,13 @@ public class AdminReportViewModel extends ViewModel {
         loading.setValue(true);
         repository.buildReport(days, result -> {
             loading.setValue(false);
-            report.setValue(result.isSuccess() ? result.data : null);
+            if (result.isSuccess()) {
+                error.setValue(false);
+                report.setValue(result.data);
+            } else {
+                report.setValue(null);
+                error.setValue(true);
+            }
         });
     }
 }

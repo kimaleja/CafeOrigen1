@@ -98,7 +98,7 @@ CafeOrigen/
 │   ├── build.gradle                      # Config del módulo (minSdk 26, ViewBinding)
 │   └── src/main/
 │       ├── AndroidManifest.xml           # 3 Activities, LAUNCHER = SplashActivity
-│       ├── java/com/cafeorigen/          # 83 archivos .java
+│       ├── java/com/cafeorigen/          # 84 archivos .java
 │       │   ├── SplashActivity.java  MainActivity.java
 │       │   ├── auth/        (5: AuthActivity, AuthViewModel, Login/Register/Recovery)
 │       │   ├── core/model/  (8: User, Product, Order, OrderItem, enums…)
@@ -107,11 +107,11 @@ CafeOrigen/
 │       │   │                  Order/Cart/Report data sources, cache, guard…)
 │       │   ├── core/ui/     (5 componentes propios + RemoteImageLoader)
 │       │   ├── core/util/   (1: Validators)
-│       │   ├── admin/       (14)
+│       │   ├── admin/       (15)
 │       │   ├── vendor/      (12)
 │       │   └── buyer/       (15)
 │       └── res/
-│           ├── layout/    (39 layouts)
+│           ├── layout/    (40 layouts)
 │           ├── drawable/  (55 XML vectoriales/formas)
 │           ├── color/     (3 selectores de estado)
 │           ├── font/      (poppins.xml, family con 4 pesos)
@@ -135,24 +135,24 @@ CafeOrigen/
 | `AuthActivity` | Huésped de `LoginFragment`, `RegisterFragment` y `PasswordRecoveryFragment`. Declarado `exported="false"` | `exported="false"` |
 | `MainActivity` | Shell de la app logueada: toolbar propia, `BottomNavigationView` con menú por rol, `FrameLayout` contenedor de Fragment, ruteo por rol (§13) y cierre de sesión | `exported="false"` |
 
-### Fragments (22, por paquete)
+### Fragments (23, por paquete)
 
 | Paquete | Fragment | Qué implementa |
 |---|---|---|
 | `auth/` | `LoginFragment` · `RegisterFragment` · `PasswordRecoveryFragment` | Login con validaciones, biometría (§14), registro, recuperación con código demo de 6 dígitos |
-| `admin/` | `AdminDashboardFragment` · `AdminProductListFragment` · `AdminReportFragment` · `AdminUserListFragment` · `UserFormFragment` · `VisualDemoFragment` | KPIs + gráfico de barras propio; moderación de productos (aprobar/rechazar/eliminar); reportes por finca; CRUD de usuarios con validación de email; catálogo visual del sistema |
+| `admin/` | `AdminDashboardFragment` · `AdminUserManagementFragment` · `AdminUserListFragment` · `UserFormFragment` · `AdminProductListFragment` · `AdminReportFragment` · `VisualDemoFragment` | Dashboard con KPIs, gráfico de barras y alertas reales; hub de usuarios con resumen por estado; CRUD de usuarios (crear, editar, desactivar y reactivar) con reglas de último admin; moderación de productos con confirmación; reporte de ventas 7/30/365 días con exportación CSV confirmada |
 | `vendor/` | `VendorDashboardFragment` · `VendorProductsFragment` · `VendorProductFormFragment` · `VendorOrdersFragment` · `VendorOrderDetailFragment` · `VendorProfileFragment` | Panel con alerta de stock<3; CRUD de productos (doble publicación borrador/solicitar moderación, imagen por `ACTION_GET_CONTENT`); pedidos con transición de estados y detalle; perfil editable |
 | `buyer/` | `BuyerHomeFragment` · `BuyerCatalogFragment` · `BuyerProductDetailFragment` · `BuyerCartFragment` · `BuyerCheckoutFragment` · `BuyerOrdersFragment` · `BuyerProfileFragment` | Inicio con chips por categoría y destacados; catálogo con búsqueda en vivo; detalle con stepper de cantidad; carrito con stepper total; pasarela demo de pago (§9, C5); historial filtrable; perfil con logout |
 
 ## 8. Diseño de layouts XML
 
-39 layouts organizados con la convención `fragment_<rol>_<pantalla>.xml`, `item_<rol>_<elemento>.xml`, `view_<componente>.xml`:
+40 layouts organizados con la convención `fragment_<rol>_<pantalla>.xml`, `item_<rol>_<elemento>.xml`, `view_<componente>.xml`:
 
 | Grupo | Archivos | Diseño |
 |---|---|---|
 | Transversales (7) | `activity_main`, `activity_auth`, `activity_splash`, `view_kpi_card`, `view_row_item`, `view_empty_state`, `item_product` | Shell con toolbar + BottomNav + contenedor; componentes personalizados (§9) |
 | Auth (3) | `fragment_login`, `fragment_register`, `fragment_password_recovery` | `TextInputLayout` con `startIcon` y `counterMaxLength`, botón principal, enlace de recuperación |
-| Admin (8) | `fragment_admin_dashboard/products/report/user_list/user_form`, `item_admin_product/user`, `item_report_row` | Dashboard con `KpiCard` en grid y `BarChartView`; listas con badges de estado semafórico (bg_tag_*) |
+| Admin (9) | `fragment_admin_dashboard/user_management/user_list/user_form/products/report`, `item_admin_product/user`, `item_report_row` | Dashboard con `KpiCard` en grid y `BarChartView`; hub de usuarios con resumen total/activas/inactivas; listas con badges de estado semafórico (bg_tag_*) |
 | Vendedor (10) | `fragment_vendor_*` (6) + `item_vendor_*` (3) + `dialog_vendor_edit_profile` | Formulario largo de producto en `ScrollView`; líneas de pedido en detalle; chips de filtro por estado |
 | Comprador (9) | `fragment_buyer_*` (7) + `item_buyer_product/cart/order` | `ChipGroup` horizontal para filtros; footer elevado fijo en el carrito; checkout con `RadioGroup` de métodos demo y overlay de éxito |
 
@@ -211,7 +211,7 @@ Flujo de arranque: `SplashActivity` consulta `SessionManager`; sin sesión → `
 
 | Rol | Menú (`menu_nav_*.xml`) | Primer tab |
 |---|---|---|
-| ADMIN | `nav_dashboard`, `nav_usuarios`, `nav_productos`, `nav_pedidos`, `nav_perfil` | `AdminDashboardFragment` |
+| ADMIN | `nav_dashboard`, `nav_usuarios`, `nav_productos`, `nav_reporte` | `AdminDashboardFragment` |
 | VENDEDOR | `nav_inicio`, `nav_productos`, `nav_pedidos`, `nav_perfil` | `VendorDashboardFragment` |
 | COMPRADOR | `nav_inicio`, `nav_catalogo`, `nav_carrito`, `nav_pedidos`, `nav_perfil` | `BuyerHomeFragment` |
 
@@ -224,6 +224,29 @@ Modelo de navegación (`MainActivity`):
 - Saltos programáticos: `openRootCatalog(category)` (prefiltro C1→C2), `openRootCart()` ("Ver carrito"), `openRootOrders()` ("Ver mis pedidos" del checkout), `openRootProducts()` (alerta de stock bajo del panel del vendedor) y `requestLogout()` (confirmación de cierre de sesión); todos verifican rol.
 - `popBackStack()` en las `openSub` (los formularios y el detalle regresan al fragment que los abrió).
 - En autenticación, el botón **atrás** del sistema regresa a Login desde Registro/Recuperación y sale del flujo desde Login (`OnBackPressedCallback` en `AuthActivity`).
+
+### 13.1 Módulo Administrador (A1–A8)
+
+Las ocho pantallas del rol se resuelven con tres destinos de menú inferior (Dashboard, Usuarios, Productos) más el Reporte como cuarto tab, y pantallas internas apiladas con `openSub`:
+
+| # | Pantalla | Implementación | Puntos clave |
+|---|---|---|---|
+| A1 | Dashboard | `AdminDashboardFragment` + `AdminDashboardViewModel` | KPIs de ventas/usuarios/productos, gráfico de barras propio y alertas operativas calculadas con datos reales (moderación pendiente, stock bajo, cuentas inactivas). |
+| A2 | Gestión de usuarios | `AdminUserManagementFragment` | Hub con resumen total/activas/inactivas y accesos al listado y a la creación; refresca al volver de una operación. |
+| A3 | Listado de usuarios | `AdminUserListFragment` + `AdminUsersViewModel` | Búsqueda en vivo, filtro por rol (Todos/Compradores/Vendedores/Admins), badges de estado, menú por fila (editar, desactivar/eliminar, reactivar). |
+| A4 | Creación de usuarios | `UserFormFragment` (modo crear) | Validación de nombre, correo (formato y duplicados), teléfono y contraseña; selector de rol. |
+| A5 | Edición de usuarios | `UserFormFragment` (modo editar) | Carga la cuenta desde `AdminDataRepository.getUser`; el correo queda bloqueado (identifica la cuenta) y la contraseña se oculta con aviso de restablecimiento desde el login. |
+| A6 | Eliminación de usuarios | Diálogo en `AdminUserListFragment` | Borrado lógico con confirmación y mensaje de resultado; la cuenta puede reactivarse después. |
+| A7 | Gestión de productos | `AdminProductListFragment` + `AdminProductsViewModel` | Filtros por estado, aprobar, rechazar y eliminar con confirmación; estado vacío distinto por filtro. |
+| A8 | Reporte de ventas | `AdminReportFragment` + `AdminReportViewModel` | Periodos 7/30/365 días, ingresos, unidades, productos más vendidos y exportación CSV con confirmación. |
+
+Reglas de negocio del módulo, centralizadas en `AdminUsersViewModel`/`AdminDataRepository` (nunca en las Activities):
+
+- **Auto-protección:** un administrador no puede desactivar su propia cuenta ni cambiar su propio rol.
+- **Último administrador:** no se permite desactivar o degradar a la última cuenta ADMIN activa; la UI muestra `admin_last_admin_error`.
+- **Reactivación:** las cuentas inactivas conservan su historial y pueden reactivarse (`action_user_activate`).
+- **Errores explícitos:** las cargas distinguen `LOAD_ERROR` de una lista vacía y las operaciones fallidas muestran `admin_op_error`, sin estados falsos de "sin datos".
+- **Doble fuente:** el repositorio usa el mock en memoria o Firestore según exista `google-services.json`; la UI no conoce la diferencia.
 
 ## 14. Autenticación biométrica
 

@@ -12,7 +12,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.cafeorigen.admin.AdminDashboardFragment;
 import com.cafeorigen.admin.AdminProductListFragment;
-import com.cafeorigen.admin.AdminUserListFragment;
+import com.cafeorigen.admin.AdminReportFragment;
+import com.cafeorigen.admin.AdminUserManagementFragment;
 import com.cafeorigen.admin.VisualDemoFragment;
 import com.cafeorigen.auth.AuthActivity;
 import com.cafeorigen.buyer.BuyerCartFragment;
@@ -204,14 +205,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (itemId == R.id.nav_usuarios) {
-            showRoot(new AdminUserListFragment(), itemId);
+            showRoot(new AdminUserManagementFragment(), itemId);
             return true;
         }
         if (itemId == R.id.nav_productos) {
             showRoot(new AdminProductListFragment(), itemId);
             return true;
         }
-        // Pedidos y Perfil del Admin: fases siguientes (el ítem no queda huérfano)
+        if (itemId == R.id.nav_reporte) {
+            showRoot(new AdminReportFragment(), itemId);
+            return true;
+        }
         showModuleInProgress(title);
         return false;
     }

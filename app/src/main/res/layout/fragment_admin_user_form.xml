@@ -29,18 +29,20 @@
             app:tint="@color/cafe_700" />
 
         <TextView
-            android:id="@+id/user_form_title_text"
-            style="@style/TextAppearance.CafeOrigen.Display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/form_title_create" />
-
-        <TextView
             style="@style/TextAppearance.CafeOrigen.Subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_4"
             android:text="@string/form_subtitle" />
+
+        <ProgressBar
+            android:id="@+id/user_form_progress"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:indeterminateTint="@color/accent_gold"
+            android:visibility="gone" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_form_name_input"
@@ -111,6 +113,15 @@
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/user_form_password_hint"
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:text="@string/form_password_edit_hint"
+            android:visibility="gone" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_form_role_input"
             style="@style/Widget.CafeOrigen.TextInputLayout.ExposedDropdown"
@@ -136,6 +147,16 @@
             android:layout_marginTop="@dimen/spacing_16"
             android:checked="true"
             android:text="@string/form_switch_active"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/user_form_self_notice"
+            style="@style/TextAppearance.CafeOrigen.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:text="@string/form_self_protected"
+            android:textColor="@color/warning"
             android:visibility="gone" />
 
         <LinearLayout
