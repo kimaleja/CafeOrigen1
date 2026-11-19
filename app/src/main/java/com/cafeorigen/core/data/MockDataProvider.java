@@ -2,6 +2,7 @@ package com.cafeorigen.core.data;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.cafeorigen.core.data.firebase.FirestoreCache;
 import com.cafeorigen.core.model.Order;
 import com.cafeorigen.core.model.OrderItem;
 import com.cafeorigen.core.model.OrderStatus;
@@ -158,8 +159,12 @@ public final class MockDataProvider {
         return null;
     }
 
-    /** Busca un usuario por id. */
+    /** Busca un usuario por id (en modo Firebase, desde el espejo de Firestore). */
     public static User findById(String id) {
+        User cached = FirestoreCache.user(id);
+        if (cached != null) {
+            return cached;
+        }
         for (User u : USERS) {
             if (u.id.equals(id)) {
                 return u;
@@ -224,7 +229,15 @@ public final class MockDataProvider {
         return Collections.unmodifiableList(PRODUCTS);
     }
 
+    /**
+     * Producto por id. En modo Firebase se resuelve desde el espejo de
+     * Firestore, que se llena al leer catálogo, listas y detalles.
+     */
     public static Product findProductById(String id) {
+        Product cached = FirestoreCache.product(id);
+        if (cached != null) {
+            return cached;
+        }
         for (Product product : PRODUCTS) {
             if (product.id.equals(id)) {
                 return product;
@@ -300,6 +313,10 @@ public final class MockDataProvider {
 
     /** Busca pedido: el consumo con permisos ocurre en la capa de repositorio. */
     public static Order findOrderById(String id) {
+        Order cached = FirestoreCache.order(id);
+        if (cached != null) {
+            return cached;
+        }
         for (Order order : ORDERS) {
             if (order.id.equals(id)) {
                 return order;

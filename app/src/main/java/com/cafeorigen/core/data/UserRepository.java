@@ -5,6 +5,8 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
+import com.cafeorigen.core.data.firebase.FirebaseAuthDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
 import com.cafeorigen.core.model.User;
 import com.cafeorigen.core.util.Validators;
 
@@ -67,9 +69,17 @@ public final class UserRepository {
     private UserRepository() {
     }
 
-    /** Autentica credenciales contra el mock (T2). */
+    /** Autentica credenciales contra Firebase o el mock (T2). */
     public void authenticate(@NonNull final String email, @NonNull final String password,
                              final Callback<User> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            if (!Validators.isValidEmail(email)) {
+                callback.onResult(Result.<User>failure("invalid_email"));
+                return;
+            }
+            FirebaseAuthDataSource.get().authenticate(email, password, callback);
+            return;
+        }
         EXECUTOR.execute(() -> {
             Result<User> result;
             if (!Validators.isValidEmail(email)) {
@@ -90,6 +100,14 @@ public final class UserRepository {
     public void register(@NonNull final String name, @NonNull final String email,
                          final String phone, @NonNull final String password,
                          final Callback<User> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            if (!Validators.isValidEmail(email)) {
+                callback.onResult(Result.<User>failure("invalid_email"));
+                return;
+            }
+            FirebaseAuthDataSource.get().register(name, email, phone, password, callback);
+            return;
+        }
         EXECUTOR.execute(() -> {
             Result<User> result;
             if (!Validators.isValidEmail(email)) {
@@ -106,6 +124,14 @@ public final class UserRepository {
 
     /** Genera y guarda un código de verificación simulado (T3, paso 1). */
     public void sendRecoveryCode(@NonNull final String email, final Callback<String> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            if (!Validators.isValidEmail(email)) {
+                callback.onResult(Result.<String>failure("invalid_email"));
+                return;
+            }
+            FirebaseAuthDataSource.get().sendRecoveryEmail(email, callback);
+            return;
+        }
         EXECUTOR.execute(() -> {
             Result<String> result;
             User user = MockDataProvider.findByEmail(email);
@@ -124,6 +150,12 @@ public final class UserRepository {
     /** Restablece la contraseña si el código coincide (T3, paso 2). */
     public void resetPassword(@NonNull final String code, @NonNull final String newPassword,
                               final Callback<Boolean> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            // Con Firebase la contraseña se cambia desde el enlace enviado al
+            // correo (Authentication no acepta un código de 6 dígitos local).
+            callback.onResult(Result.<Boolean>failure("recovery_link_required"));
+            return;
+        }
         EXECUTOR.execute(() -> {
             Result<Boolean> result;
             if (pendingCode == null || !pendingCode.equals(code.trim())) {

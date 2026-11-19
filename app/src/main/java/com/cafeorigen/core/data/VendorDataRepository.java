@@ -3,6 +3,11 @@ package com.cafeorigen.core.data;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
+import com.cafeorigen.core.data.firebase.FirebaseOrderDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseProductDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseReportDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseUserDataSource;
 import com.cafeorigen.core.model.Order;
 import com.cafeorigen.core.model.OrderStatus;
 import com.cafeorigen.core.model.Product;
@@ -32,8 +37,9 @@ public final class VendorDataRepository {
         public final List<Order> toConfirm;  // pedidos por confirmar
         public final float[] weeklyChart;    // ingresos últimos 7 días
 
-        VendorDashboard(long salesMonth, int activeProducts, int pendingOrders,
-                        List<Product> lowStock, List<Order> toConfirm, float[] weeklyChart) {
+        public VendorDashboard(long salesMonth, int activeProducts, int pendingOrders,
+                               List<Product> lowStock, List<Order> toConfirm,
+                               float[] weeklyChart) {
             this.salesMonth = salesMonth;
             this.activeProducts = activeProducts;
             this.pendingOrders = pendingOrders;
@@ -85,12 +91,20 @@ public final class VendorDataRepository {
     /** Solo los productos del vendedor dueño (permisos por vendorId). */
     public void listProducts(final String vendorId,
                              UserRepository.Callback<List<Product>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().listByVendor(vendorId, callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(MockDataProvider.productsFor(vendorId)), callback);
     }
 
     /** Crea (V3) o actualiza (V4) un producto del vendedor. */
     public void saveProduct(final Product draft, final boolean isNew,
                             UserRepository.Callback<Product> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().saveProduct(draft, isNew, callback);
+            return;
+        }
         async(() -> {
             if (isNew) {
                 return UserRepository.Result.success(MockDataProvider.addProduct(draft));
@@ -104,6 +118,10 @@ public final class VendorDataRepository {
 
     /** Borrado de producto (V5); el mock lo retira de la lista. */
     public void deleteProduct(final String productId, UserRepository.Callback<Boolean> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().deleteProduct(productId, callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(MockDataProvider.removeProduct(productId)), callback);
     }
 
@@ -111,12 +129,20 @@ public final class VendorDataRepository {
 
     /** Solo los pedidos recibidos por este vendedor. */
     public void listOrders(final String vendorId, UserRepository.Callback<List<Order>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseOrderDataSource.get().ordersForVendor(vendorId, callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(MockDataProvider.ordersFor(vendorId)), callback);
     }
 
     /** Cambia el estado de un pedido propio (historial V6 + detalle V7). */
     public void updateOrderStatus(final String orderId, final OrderStatus newStatus,
                                   UserRepository.Callback<Order> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseOrderDataSource.get().updateStatus(orderId, newStatus, callback);
+            return;
+        }
         async(() -> {
             boolean ok = MockDataProvider.updateOrderStatus(orderId, newStatus);
             Order order = ok ? MockDataProvider.findOrderById(orderId) : null;
@@ -129,6 +155,10 @@ public final class VendorDataRepository {
 
     public void dashboardFor(final String vendorId,
                              UserRepository.Callback<VendorDashboard> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseReportDataSource.get().vendorDashboard(vendorId, callback);
+            return;
+        }
         async(() -> {
             List<Product> ownProducts = MockDataProvider.productsFor(vendorId);
             List<Order> ownOrders = MockDataProvider.ordersFor(vendorId);
@@ -180,6 +210,10 @@ public final class VendorDataRepository {
     /** Actualiza nombre y teléfono del vendedor (V8). */
     public void updateProfile(final String userId, final String name, final String phone,
                               UserRepository.Callback<User> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseUserDataSource.get().updateProfile(userId, name, phone, callback);
+            return;
+        }
         async(() -> {
             User current = MockDataProvider.findById(userId);
             if (current == null) {

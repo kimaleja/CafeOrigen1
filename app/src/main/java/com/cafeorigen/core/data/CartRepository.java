@@ -1,5 +1,7 @@
 package com.cafeorigen.core.data;
 
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
+import com.cafeorigen.core.data.firebase.FirebaseCartDataSource;
 import com.cafeorigen.core.model.Product;
 
 import java.util.ArrayList;
@@ -7,9 +9,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * CafeOrigen — Carrito de compras en memoria (sin backend).
- * Sobrevive a la navegación entre tabs y sub-pantallas de la misma sesión.
- * Valida existencias contra el mock al agregar/actualizar unidades.
+ * CafeOrigen — Carrito de compras.
+ * En modo mock vive solo en memoria (sobrevive a la navegación entre tabs).
+ * En modo Firebase se persiste en carts/{uid}: al iniciar sesión se carga del
+ * servidor y cada cambio se escribe en segundo plano (write-through).
  */
 public final class CartRepository {
 
@@ -28,6 +31,11 @@ public final class CartRepository {
 
     private static volatile CartRepository instance;
 
+    /** uid del carrito persistido (null = solo memoria). */
+    private String cloudUid;
+    /** Aviso a la UI cuando el carrito cambia desde Firestore. */
+    private Runnable onChangedListener;
+
     public static CartRepository get() {
         if (instance == null) {
             synchronized (CartRepository.class) {
@@ -40,6 +48,64 @@ public final class CartRepository {
     }
 
     private CartRepository() {
+    }
+
+    // ==================== PERSISTENCIA (Firestore) ====================
+
+    /**
+     * Asocia el carrito al usuario autenticado y trae su contenido guardado.
+     * Sin Firebase, el carrito sigue siendo local y no hace nada.
+     */
+    public synchronized void attach(String uid) {
+        if (!FirebaseBootstrap.isConfigured() || uid == null) {
+            cloudUid = null;
+            return;
+        }
+        cloudUid = uid;
+        FirebaseCartDataSource.get().load(uid, result -> {
+            if (!result.isSuccess()) {
+                return; // se conserva el carrito en memoria y se reintenta al cambiar algo
+            }
+            synchronized (CartRepository.this) {
+                ITEMS.clear();
+                if (result.data != null) {
+                    ITEMS.addAll(result.data);
+                }
+            }
+            notifyChanged();
+        });
+    }
+
+    /** Desasocia y limpia el carrito (cierre de sesión / cambio de usuario). */
+    public synchronized void detach() {
+        cloudUid = null;
+        ITEMS.clear();
+        FirebaseCartDataSource.get().reset();
+        notifyChanged();
+    }
+
+    public void setOnChangedListener(Runnable listener) {
+        this.onChangedListener = listener;
+    }
+
+    private void notifyChanged() {
+        Runnable listener = onChangedListener;
+        if (listener != null) {
+            listener.run();
+        }
+    }
+
+    /** Escribe el estado actual (agrupando ráfagas de cambios). */
+    private void persist() {
+        if (cloudUid != null && FirebaseBootstrap.isConfigured()) {
+            FirebaseCartDataSource.get().save(cloudUid, new ArrayList<>(ITEMS));
+        }
+    }
+
+    /** Vacía sin intentar escribir de nuevo (tras el checkout transaccional). */
+    public synchronized void clearLocal() {
+        ITEMS.clear();
+        notifyChanged();
     }
 
     /** Agrega (o suma) unidades; respeta el stock disponible. */
@@ -61,9 +127,11 @@ public final class CartRepository {
         }
         if (existing > 0) {
             replace(productId, new CartItem(productId, target));
-            return true;
+        } else {
+            ITEMS.add(new CartItem(productId, target));
         }
-        ITEMS.add(new CartItem(productId, target));
+        persist();
+        notifyChanged();
         return true;
     }
 
@@ -82,6 +150,8 @@ public final class CartRepository {
         for (CartItem item : ITEMS) {
             if (item.productId.equals(productId)) {
                 replace(productId, new CartItem(productId, units));
+                persist();
+                notifyChanged();
                 return true;
             }
         }
@@ -90,12 +160,19 @@ public final class CartRepository {
 
     /** Quita una línea del carrito. */
     public synchronized boolean remove(String productId) {
-        return ITEMS.removeIf(item -> item.productId.equals(productId));
+        boolean removed = ITEMS.removeIf(item -> item.productId.equals(productId));
+        if (removed) {
+            persist();
+            notifyChanged();
+        }
+        return removed;
     }
 
     /** Vacía el carrito (tras confirmar la compra). */
     public synchronized void clear() {
         ITEMS.clear();
+        persist();
+        notifyChanged();
     }
 
     /** Snapshot de líneas (solo lectura). */

@@ -5,6 +5,10 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
+import com.cafeorigen.core.data.firebase.FirebaseProductDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseReportDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseUserDataSource;
 import com.cafeorigen.core.model.Product;
 import com.cafeorigen.core.model.ProductStatus;
 import com.cafeorigen.core.model.Role;
@@ -36,7 +40,7 @@ public final class AdminDataRepository {
         public final int units;
         public final long revenue;
 
-        ReportRow(String productName, String region, int units, long revenue) {
+        public ReportRow(String productName, String region, int units, long revenue) {
             this.productName = productName;
             this.region = region;
             this.units = units;
@@ -52,7 +56,8 @@ public final class AdminDataRepository {
         public final int totalUnits;
         public final float[] dailyChart; // ingresos por día del periodo (día -N a hoy)
 
-        ReportData(int days, List<ReportRow> rows, long revenue, int units, float[] chart) {
+        public ReportData(int days, List<ReportRow> rows, long revenue, int units,
+                          float[] chart) {
             this.days = days;
             this.rows = rows;
             this.totalRevenue = revenue;
@@ -71,8 +76,9 @@ public final class AdminDataRepository {
         public final List<Product> pendingList;
         public final float[] weeklyChart; // índice 0 = día más antiguo de la semana
 
-        DashboardStats(long revenue, int users, int products, int pending,
-                       List<Product> lowStock, List<Product> pendingList, float[] weeklyChart) {
+        public DashboardStats(long revenue, int users, int products, int pending,
+                              List<Product> lowStock, List<Product> pendingList,
+                              float[] weeklyChart) {
             this.revenueMonth = revenue;
             this.usersCount = users;
             this.productsCount = products;
@@ -122,12 +128,24 @@ public final class AdminDataRepository {
     // =================== USUARIOS (A2–A5) ===================
 
     public void listUsers(UserRepository.Callback<List<User>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseUserDataSource.get().listUsers(callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(MockDataProvider.users()), callback);
     }
 
     /** Crea usuario con rol (A3) o actualiza existente (A4). */
     public void saveUser(final User draft, final boolean isNew,
                          UserRepository.Callback<User> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            if (!Validators.isValidEmail(draft.email)) {
+                callback.onResult(UserRepository.Result.<User>failure("invalid_email"));
+                return;
+            }
+            FirebaseUserDataSource.get().saveUser(draft, isNew, callback);
+            return;
+        }
         async(() -> {
             if (!Validators.isValidEmail(draft.email)) {
                 return UserRepository.Result.<User>failure("invalid_email");
@@ -161,6 +179,10 @@ public final class AdminDataRepository {
     /** Borrado lógico / bloqueo de cuenta (A5). */
     public void setUserActive(final String userId, final boolean active,
                               UserRepository.Callback<User> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseUserDataSource.get().setUserActive(userId, active, callback);
+            return;
+        }
         async(() -> {
             boolean ok = MockDataProvider.setUserActive(userId, active);
             User user = ok ? MockDataProvider.findById(userId) : null;
@@ -172,12 +194,20 @@ public final class AdminDataRepository {
     // =================== PRODUCTOS (A6) ===================
 
     public void listProducts(UserRepository.Callback<List<Product>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().listAll(callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(MockDataProvider.products()), callback);
     }
 
     /** Aprueba (ACTIVO) o rechaza (RECHAZADO) un café. */
     public void moderateProduct(final String productId, final ProductStatus newStatus,
                                 UserRepository.Callback<Product> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().moderate(productId, newStatus, callback);
+            return;
+        }
         async(() -> {
             boolean ok = MockDataProvider.moderateProduct(productId, newStatus);
             Product product = ok ? MockDataProvider.findProductById(productId) : null;
@@ -188,12 +218,20 @@ public final class AdminDataRepository {
 
     /** Eliminación de producto (mock: retira la entrada; en backend, borrado lógico). */
     public void deleteProduct(final String productId, UserRepository.Callback<Boolean> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().deleteProduct(productId, callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(MockDataProvider.removeProduct(productId)), callback);
     }
 
     // =================== DASHBOARD (A1) ===================
 
     public void dashboardStats(UserRepository.Callback<DashboardStats> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseReportDataSource.get().adminDashboard(callback);
+            return;
+        }
         async(() -> {
             List<User> users = MockDataProvider.users();
             List<Product> products = MockDataProvider.products();
@@ -236,6 +274,10 @@ public final class AdminDataRepository {
     // =================== REPORTE DE VENTAS (A7) ===================
 
     public void buildReport(final int days, UserRepository.Callback<ReportData> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseReportDataSource.get().buildReport(days, callback);
+            return;
+        }
         async(() -> {
             Map<String, int[]> byProduct = new HashMap<>(); // [0]=unidades [1]=ingresos
             float[] daily = new float[days];

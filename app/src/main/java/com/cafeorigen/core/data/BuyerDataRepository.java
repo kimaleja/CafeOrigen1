@@ -3,6 +3,9 @@ package com.cafeorigen.core.data;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.cafeorigen.core.data.firebase.FirebaseBootstrap;
+import com.cafeorigen.core.data.firebase.FirebaseOrderDataSource;
+import com.cafeorigen.core.data.firebase.FirebaseProductDataSource;
 import com.cafeorigen.core.model.Order;
 import com.cafeorigen.core.model.OrderItem;
 import com.cafeorigen.core.model.OrderStatus;
@@ -76,6 +79,10 @@ public final class BuyerDataRepository {
 
     /** Café publicado y aprobado (solo ACTIVO); nunca borradores/moderadas. */
     public void catalog(UserRepository.Callback<List<Product>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().catalog(callback);
+            return;
+        }
         async(() -> {
             List<Product> active = new ArrayList<>();
             for (Product product : MockDataProvider.products()) {
@@ -90,6 +97,10 @@ public final class BuyerDataRepository {
 
     /** Destacados para el inicio (C1): primeros cafés activos. */
     public void featured(int limit, UserRepository.Callback<List<Product>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().featured(limit, callback);
+            return;
+        }
         async(() -> {
             List<Product> active = new ArrayList<>();
             for (Product product : MockDataProvider.products()) {
@@ -116,6 +127,11 @@ public final class BuyerDataRepository {
                          final Delivery delivery,
                          final List<CartRepository.CartItem> cartItems,
                          UserRepository.Callback<List<Order>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseOrderDataSource.get().checkout(buyerId, buyerName, delivery, cartItems,
+                    callback);
+            return;
+        }
         async(() -> {
             if (delivery.recipientName == null || delivery.address == null) {
                 return UserRepository.Result.<List<Order>>failure("delivery_invalid");
@@ -172,7 +188,25 @@ public final class BuyerDataRepository {
     /** Solo los pedidos del comprador en sesión (permiso buyerId). */
     public void buyerOrders(final String buyerId,
                             UserRepository.Callback<List<Order>> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseOrderDataSource.get().ordersForBuyer(buyerId, callback);
+            return;
+        }
         async(() -> UserRepository.Result.success(
                 MockDataProvider.ordersForBuyer(buyerId)), callback);
+    }
+
+    /** Un producto por id (detalle y reconstrucción del carrito persistente). */
+    public void productById(String productId, UserRepository.Callback<Product> callback) {
+        if (FirebaseBootstrap.isConfigured()) {
+            FirebaseProductDataSource.get().byId(productId, callback);
+            return;
+        }
+        async(() -> {
+            Product product = MockDataProvider.findProductById(productId);
+            return product == null
+                    ? UserRepository.Result.<Product>failure("not_found")
+                    : UserRepository.Result.success(product);
+        }, callback);
     }
 }
