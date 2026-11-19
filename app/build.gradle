@@ -3,6 +3,13 @@ plugins {
     id 'com.android.application'
 }
 
+// Firebase se activa únicamente cuando existe la configuración real del proyecto.
+// Sin app/google-services.json el plugin no se aplica: la app compila e inicia
+// con la fuente de datos mock (FirebaseBootstrap.isConfigured() == false).
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
 android {
     namespace 'com.cafeorigen'
     compileSdk 34
@@ -37,4 +44,14 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata:2.8.4'
     // Autenticación biométrica oficial de AndroidX (BiometricPrompt)
     implementation 'androidx.biometric:biometric:1.1.0'
+
+    // ---------------------------------------------------------------------
+    // Firebase (Auth + Cloud Firestore + Storage)
+    // BoM 33.16.0: última línea compatible con compileSdk 34 / AGP 8.5.2.
+    // Las versiones de cada artefacto las resuelve el BoM (no se fijan aquí).
+    // ---------------------------------------------------------------------
+    implementation platform('com.google.firebase:firebase-bom:33.16.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
 }

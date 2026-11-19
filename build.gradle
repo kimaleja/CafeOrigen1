@@ -1,4 +1,7 @@
 // Proyecto: CafeOrigen — Tienda virtual Android de café de especialidad colombiano
 plugins {
     id 'com.android.application' version '8.5.2' apply false
+    // Google services: procesa google-services.json (Firebase). No se aplica al
+    // módulo :app si el archivo no existe (ver app/build.gradle).
+    id 'com.google.gms.google-services' version '4.4.4' apply false
 }
