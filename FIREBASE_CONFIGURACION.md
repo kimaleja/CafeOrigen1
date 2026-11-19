@@ -396,6 +396,7 @@ y apuntar la app con `FirebaseBootstrap` en modo emulador (requiere cambiar
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
+| El logcat muestra `Default FirebaseApp failed to initialize because no default options were found` | Modo mock (no hay `google-services.json`) | **Esperado y benigno**: `FirebaseBootstrap` lo captura y mantiene el mock. Solo es un problema si se esperaba el modo Firebase |
 | La app sigue mostrando datos del mock | `google-services.json` ausente, mal ubicado o con otro paquete | Debe estar en `app/` y su `package_name` debe ser `com.cafeorigen`; luego `clean assembleDebug` |
 | `File google-services.json is missing` | El plugin se aplicó sin el archivo | No ocurre: el plugin es condicional. Si se fuerza, colocar el JSON o quitar la línea |
 | `PERMISSION_DENIED` al iniciar sesión | `users/{uid}` inexistente o `active: false` | Ejecutar el seed o crear el perfil; verificar `active` |

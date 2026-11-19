@@ -17,7 +17,7 @@
 | **Código a explicar** | Las 3 Activities: `SplashActivity` (LAUNCHER), `AuthActivity`, `MainActivity`; `minSdk 26` / `targetSdk 34` y `buildFeatures.viewBinding` en `app/build.gradle` |
 | **Recurso a señalar** | Carpeta `res/` — señalar con el cursor `layout/` (39), `drawable/` (55), `values/` |
 | **Qué demostrar** | De qué trata la app: tienda de café de origen con 3 roles en una misma app |
-| **Frase de voz sugerida** | "CaféOrigen es una tienda de café de origen escrita en Java, con arquitectura MVVM por capas y un mock en memoria como fuente de datos" — cerrar este bloque en menos de 35 segundos |
+| **Frase de voz sugerida** | "CaféOrigen es una tienda de café de origen escrita en Java, con arquitectura MVVM por capas y una capa de datos que funciona con un mock en memoria o con Firebase real" — cerrar este bloque en menos de 35 segundos |
 
 ## Bloque 2 — Splash y login con biometría (0:35 – 1:20)
 
@@ -76,7 +76,7 @@
 ## Consejos de grabación
 
 1. **Cronómetro**: el guion suma ~4:50. Si un bloque se alarga, recorta el Bloque 5 (mostrar solo el dashboard sin moderación).
-2. **Credenciales demo**: aclarar en la toma que las contraseñas mostradas son cuentas demo del seed del mock; no incluir credenciales relacionadas con tu GitHub ni del PAT por ningún motivo.
+2. **Credenciales demo**: aclarar en la toma que las contraseñas mostradas son cuentas demo del seed (mock o `firebase/seed/seed-firestore.js`); no incluir credenciales relacionadas con tu GitHub ni del PAT por ningún motivo, ni mostrar `google-services.json` o `serviceAccount.json`.
 3. **Evitar distracciones**: no abrir archivos fuera del guion; si se abre algo inadvertido, vuelve a grabar el bloque.
 4. **Cierre visual**: mostrar el ZIP de entrega `CafeOrigen-entrega-v1.0.0.zip` en el explorador 3 segundos al final.
 5. Si la biometría no está disponible en el emulador, mostrar el mensaje del caso `NONE_ENROLLED` (también es demo válida del flujo) o registrar una huella en el emulador (`Settings → Security → Fingerprint`).

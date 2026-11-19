@@ -159,3 +159,28 @@ Guía pendiente para QA funcional completo si se quiere extender el alcance:
 | **Pruebas de rendimiento/memoria (profiler, iteraciones de stress)** | ❌ sin dispositivo |
 
 **Conclusión:** el front-end de los 3 roles compila limpio, todas las referencias a recursos y la navegación resuelven, la separación de permisos por rol es correcta en la capa de datos y los errores detectados quedan corregidos y verificados con build + Lint ejecutados (32 errores de Lint + 6 atributos `app:tint` duplicados + 2 erratas de texto + 1 evento de UI no consumido). Las pruebas funcionales en runtime requieren un dispositivo o emulador conectado y **no** se declararon como ejecutadas.
+
+---
+
+## 19. Adenda — Integración Firebase (18–19/11/2026)
+
+Se añadió la capa de persistencia real (Auth + Cloud Firestore + Storage) manteniendo
+las firmas de repositorios, los ViewModels y la UI. El modo lo decide
+`FirebaseBootstrap.isConfigured()` según exista o no `app/google-services.json`.
+
+| Verificación | Método | Resultado |
+|---|---|---|
+| Dependencias y plugin condicional | `:app:compileDebugJavaWithJavac` + resolución desde Google Maven | ✅ ExitCode 0 |
+| Build completo con los SDK incluidos | `:app:assembleDebug` | ✅ BUILD SUCCESSFUL · APK 11.647.003 bytes |
+| Android Lint tras la integración | `:app:lintDebug` | ✅ **0 errores** / 84 warnings: los 83 previos + 1 `GradleDependency` intencional (BoM 33.16.0 frente a 35.2.0, que exigiría subir `compileSdk`) |
+| Arranque en modo mock (sin JSON) | Emulador API 37, `am force-stop` + monkey + `dumpsys` | ✅ Splash → MainActivity, sin crash; sesión previa restaurada |
+| Comportamiento esperado del SDK sin credenciales | `adb logcat` | ✅ `FirebaseApp failed to initialize` capturado por `FirebaseBootstrap` (modo mock) |
+| Sintaxis del seed | `node --check seed-firestore.js` + parse de los 3 JSON | ✅ OK |
+| Conexión real a Auth/Firestore/Storage | Requiere `google-services.json` del proyecto | ⚠️ **no ejecutada**: sin credenciales no se puede ni fabricar ni versionar la configuración |
+| Reglas y seed desplegados | Requiere proyecto + Firebase CLI | ⚠️ pendiente |
+
+**Limitación declarada:** la verificación real (login, catálogo, checkout y Storage
+contra el proyecto) queda preparada y documentada paso a paso en
+`FIREBASE_CONFIGURACION.md` (§3, §6 y §7 con 20 casos de reglas), pero no puede
+declararse ejecutada sin el archivo de configuración de la cuenta dueña del
+proyecto.
