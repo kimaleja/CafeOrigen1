@@ -66,9 +66,9 @@ Patrón **MVVM por capas** con navegación manual por `FragmentManager`:
 ```
 
 - **Un LiveData por responsabilidad** en cada ViewModel (lista visible, loading, resultado de operación `OpsState`).
-- **Repositorios asíncronos**: ejecutor propio + `Handler` del main con latencia de 350 ms, devuelven `Result<T>` (`UserRepository.Result`). Esto permite sustituir el mock por un backend real sin tocar la UI.
-- **CartRepository** singleton del carrito en memoria (métodos `synchronized`) con validación de stock contra el mock en cada operación.
-- **Permisos en la capa de datos**: `ordersForBuyer(buyerId)` para el comprador, filtrado por `vendorId` para el vendedor; se filtra al devolver los resultados, no en la UI.
+- **Repositorios asíncronos**: devuelven `Result<T>` (`UserRepository.Result`). La fuente se elige en ejecución: `FirebaseBootstrap.isConfigured()` → `core/data/firebase/*` (Auth/Firestore/Storage reales) o, en su defecto, el mock con latencia simulada de 350 ms. Esto permite alternar mock y backend real sin tocar la UI (§17).
+- **CartRepository** singleton: carrito en memoria validado contra stock; con Firebase se respalda en `carts/{uid}` (escrituras write-through) y se repinta por listener.
+- **Permisos en la capa de datos**: `ordersForBuyer(buyerId)` para el comprador, filtrado por `vendorId` para el vendedor; se filtra al devolver los resultados, no en la UI. Con Firebase el aislamiento se refuerza en las reglas (§17).
 
 ## 5. Tecnologías utilizadas
 
@@ -85,6 +85,8 @@ Patrón **MVVM por capas** con navegación manual por `FragmentManager`:
 | UI | CardView | 1.0.0 |
 | Arquitectura | Lifecycle (ViewModel + LiveData) | 2.x |
 | Seguridad | `androidx.biometric:biometric` | 1.1.0 |
+| Backend | Firebase BoM (`auth`, `firestore`, `storage`) | 33.16.0 |
+| Backend | Plugin `com.google.gms:google-services` | 4.4.4 (condicional) |
 | Binding | ViewBinding (`buildFeatures.viewBinding`) | habilitado |
 | Tipografía | Poppins (Regular/Medium/Semibold/Bold) | recurso local `res/font/` |
 
@@ -96,16 +98,18 @@ CafeOrigen/
 │   ├── build.gradle                      # Config del módulo (minSdk 26, ViewBinding)
 │   └── src/main/
 │       ├── AndroidManifest.xml           # 3 Activities, LAUNCHER = SplashActivity
-│       ├── java/com/cafeorigen/          # 69 archivos .java
+│       ├── java/com/cafeorigen/          # 83 archivos .java
 │       │   ├── SplashActivity.java  MainActivity.java
 │       │   ├── auth/        (5: AuthActivity, AuthViewModel, Login/Register/Recovery)
 │       │   ├── core/model/  (8: User, Product, Order, OrderItem, enums…)
 │       │   ├── core/data/   (7: MockDataProvider, 5 repos, SessionManager, CartRepository)
-│       │   ├── core/ui/     (4 componentes propios)
+│       │   │   └── firebase/ (12: Bootstrap, Schema, Mappers, Auth/User/Product/
+│       │   │                  Order/Cart/Report data sources, cache, guard…)
+│       │   ├── core/ui/     (5 componentes propios + RemoteImageLoader)
 │       │   ├── core/util/   (1: Validators)
 │       │   ├── admin/       (14)
-│       │   ├── vendor/      (13)
-│       │   └── buyer/       (14)
+│       │   ├── vendor/      (12)
+│       │   └── buyer/       (15)
 │       └── res/
 │           ├── layout/    (39 layouts)
 │           ├── drawable/  (55 XML vectoriales/formas)
@@ -115,8 +119,10 @@ CafeOrigen/
 │           ├── menu/      (6 menús de nav/toolbar)
 │           └── values/    (attrs, colors, dimens, strings, styles, themes)
 ├── gradle/wrapper/                       # Gradle wrapper reproducible
-├── README.md · INFORME_AUDITORIA.md      # Documentos de entrega
-└── .gitignore                            # excluye build/, .gradle/, local.properties…
+├── firebase/                             # Reglas Firestore/Storage, firebase.json y seed
+├── README.md · INFORME_AUDITORIA.md
+├── FIREBASE_CONFIGURACION.md             # Checklist y verificación real de Firebase
+└── .gitignore                            # excluye build/, .gradle/, local.properties, google-services.json…
 ```
 
 ## 7. Descripción de Activities y Fragments
@@ -242,7 +248,7 @@ Decisiones de diseño: en `showBiometricPrompt()` se exige **una sesión previa 
 
 ## 15. Pruebas realizadas
 
-Metodología honesta: **verificación estática + compilación + Lint**; en esta entrega no hay pruebas de runtime (sin dispositivo/emulador conectado — `adb devices` vacío). El detalle completo, con evidencia y el listado de lo **no** probado, está en `INFORME_AUDITORIA.md`.
+Metodología honesta: **verificación estática + compilación + Lint**, más las sesiones de runtime puntuales registradas abajo. El detalle completo, con evidencia y el listado de lo **no** probado, está en `INFORME_AUDITORIA.md`.
 
 | Verificación | Método | Resultado |
 |---|---|---|
@@ -260,6 +266,8 @@ Metodología honesta: **verificación estática + compilación + Lint**; en esta
 | **Navegación por tabs de los 3 roles (runtime)** | `adb shell input tap` + `uiautomator dump` | ✅ selección y fragmentos correctos, proceso estable, 0 crashes |
 | **Moderación admin (runtime)** | Tap "Aprobar" en Pendientes | ✅ café pasa de Pendientes a Activos |
 | **Transición de pedido vendedor (runtime)** | Detalle → "Confirmar" | ✅ badge Por confirmar → Confirmado propagado a la lista |
+| Compilación completa con Firebase | `gradle :app:assembleDebug` (18/11/2026) | ✅ BUILD SUCCESSFUL, modo mock por defecto |
+| Conexión real a Firebase | Requiere `google-services.json` del proyecto | ⚠️ pendiente (`FIREBASE_CONFIGURACION.md` §3 y §6) |
 | Checkout completo cross-role, CRUD admin/vendedor, rotación, biometría | — | ❌ runtime pendiente ([ver informe](INFORME_AUDITORIA.md) §16) |
 
 ## 16. Generación del APK
@@ -271,30 +279,135 @@ Metodología honesta: **verificación estática + compilación + Lint**; en esta
 | Dato | Valor |
 |---|---|
 | **Ruta exacta** | `C:\Users\kaval\Documents\Default Project\CafeOrigen\app\build\outputs\apk\debug\app-debug.apk` |
-| Tamaño | 6.693.196 bytes |
+| Tamaño | 11.647.003 bytes (≈ 11,6 MB con los SDK de Firebase incluidos) |
 | applicationId | `com.cafeorigen` |
 | versionName / versionCode | `1.0.0` / `1` |
 | minSdk | 26 |
 | Certificado | Firma de debug (`debug.keystore` del SDK; **no** incluida en el repositorio) |
 
-## 17. Repositorio GitHub
+## 17. Integración con Firebase (Auth + Cloud Firestore + Storage)
+
+La entrega incorpora una capa de persistencia real **opcional y no invasiva**: la
+app detecta si existe `app/google-services.json` y elige la fuente de datos en
+tiempo de ejecución. Sin el archivo, todo sigue funcionando con el mock; con el
+archivo, los mismos repositorios (mismas firmas, mismos ViewModels, misma UI)
+delegan en Firebase.
+
+### 17.1 Selección de fuente
+
+```
+Fragment → ViewModel → Repositorio ─┬─ FirebaseBootstrap.isConfigured() == true
+                                    │     → core/data/firebase/*
+                                    └─ false
+                                          → MockDataProvider (mock)
+```
+
+`FirebaseBootstrap` es el único punto que conoce el SDK: expone `auth()`,
+`db()`, `storage()`, `currentUid()` e `isConfigured()`. `FirestoreSchema`
+centraliza los nombres de colecciones/campos y `FirebaseMappers` traduce entre
+`DocumentSnapshot` y los modelos existentes (`User`, `Product`, `Order`).
+
+### 17.2 Colecciones
+
+| Colección | Documento | Uso |
+|---|---|---|
+| `users` | `{uid}` | Perfil, `role` y `active` (autorización) |
+| `products` | `{productId}` | Catálogo, `vendorId`, stock, `status` de moderación |
+| `orders` | `{orderId}` | Pedidos con `buyerId`, `vendorId`, `items`, `total` |
+| `carts` | `{uid}` | Carrito persistente del comprador |
+| `categories` | `{clave del enum}` | Catálogo de categorías |
+
+No se requieren índices compuestos: las consultas usan un solo filtro de
+igualdad y el orden se resuelve en el cliente (`firestore.indexes.json` vacío).
+
+### 17.3 Reglas de seguridad por rol
+
+Ambos archivos (`firebase/firestore.rules`, `firebase/storage.rules`) son
+**deny-by-default** y leen el rol de `users/{uid}`, nunca de un campo enviado por
+el cliente:
+
+- **users**: registro público solo crea su propio perfil como `COMPRADOR`
+  activo con el correo de su token; la autoedición no puede tocar `role`,
+  `active` ni `email`; solo un ADMIN activo cambia roles/estado.
+- **products**: el vendedor crea solo a su nombre y solo en `BORRADOR`/`PENDIENTE`
+  (no puede autoaprobarse); actualiza únicamente productos con
+  `vendorId == request.auth.uid` y sin cambiar de dueño; el ADMIN modera y
+  elimina.
+- **orders**: el comprador solo lee los suyos y **no tiene ninguna rama de
+  escritura** (salvo crear con `buyerId` propio y estado `POR_CONFIRMAR`); el
+  vendedor dueño solo avanza el estado sin tocar líneas, total ni contraparte;
+  `delete` siempre denegado (histórico).
+- **carts**: solo el dueño del `uid`.
+- **Storage** (`products/{vendorId}/{archivo}`): lectura con sesión; escritura
+  solo del vendedor activo dueño, `image/*` y < 5 MB; cualquier otra ruta
+  denegada.
+
+**Limitación declarada:** como el checkout corre en el cliente, la regla de
+`products` permite al comprador modificar **únicamente** el campo `stock` y
+**solo para reducirlo**. Es una concesión acotada para validar stock sin
+backend; la solución definitiva es mover la transacción a una Cloud Function y
+eliminar esa rama (documentado en `FIREBASE_CONFIGURACION.md` §5 y §9).
+
+### 17.4 Persistencia, concurrencia y errores
+
+- **Firestore con caché local persistente** (`setPersistenceEnabled(true)`).
+- **Checkout transaccional**: valida stock, descuenta, crea un pedido por finca,
+  borra el carrito y actualiza la caché en una sola transacción atómica.
+- **Carrito real**: `carts/{uid}` con escrituras write-through colapsadas y
+  listener de cambios; el carrito sobrevive al cierre de la app y a la rotación.
+- **Anti duplicados**: `InFlightGuard` + botones deshabilitados durante login,
+  registro, guardados y pago.
+- **Errores de conexión**: `FirebaseErrorMapper` traduce `UNAVAILABLE`,
+  `PERMISSION_DENIED`, `UNAUTHENTICATED`, `ALREADY_EXISTS`, etc. a mensajes en
+  español mostrados en snackbar/campo, sin perder la pantalla.
+- **Sesión**: el SDK mantiene la sesión; `SessionManager.restoreLastUser()`
+  rehidrata el perfil al entrar con biometría.
+- **Imágenes**: `RemoteImageLoader` (`HttpURLConnection` + `LruCache`) muestra
+  URLs de Storage sin agregar dependencias (Glide/Coil).
+
+### 17.5 Flujos de correo y datos demo
+
+La recuperación de contraseña usa `sendPasswordResetEmail` real (con el
+centinela `RECOVERY_EMAIL_SENT` para que la UI no avance al paso del código
+simulado). `firebase/seed/seed-firestore.js` recrea las 5 cuentas demo, las
+categorías, los 8 productos y los 6 pedidos mediante `firebase-admin`; la clave
+de servicio y `google-services.json` están excluidos de Git.
+
+### 17.6 Estado de verificación (18/11/2026)
+
+| Ítem | Resultado |
+|---|---|
+| Compilación con el SDK incluido (sin JSON) | ✅ `compileDebugJavaWithJavac` y `assembleDebug` OK |
+| Modo mock intacto | ✅ la app sigue arrancando con `MockDataProvider` |
+| Plugin google-services aplicado | ⚠️ no verificable sin `google-services.json` |
+| Conexión real a Auth/Firestore/Storage | ⚠️ pendiente de credenciales del proyecto de la estudiante |
+| Reglas y seed desplegados | ⚠️ pendiente de proyecto + Firebase CLI |
+
+La verificación real (crear proyecto, descargar el JSON, habilitar Email/Password,
+publicar reglas, ejecutar el seed y comprobar Auth/Firestore/Storage desde la
+app) está detallada paso a paso en `FIREBASE_CONFIGURACION.md`, junto con la
+matriz de 20 pruebas de reglas.
+
+## 18. Repositorio GitHub
 
 | Aspecto | Estado |
 |---|---|
-| Local | ✅ Repositorio Git `main` con historia descriptiva por capas (`git log`: `chore` config → `feat(core)` → `feat(auth)` → `feat(shell)` → `feat(admin)` → `feat(vendor)` → `feat(buyer)` → `feat(ui)` → `docs`). Working tree limpio. |
-| Archivos sensibles | ✅ Sin secretos reales: `local.properties` (ruta del SDK del equipo), `build/`, `.gradle/` y keystores quedan excluidos por `.gitignore`. Las únicas credenciales presentes son las cuentas **demo** del mock, intencionales para la evaluación (§3). |
-| Remoto | Cuenta GitHub de la estudiante: `kimaleja` · repositorio público previsto: `cafeorigen`. **Push pendiente de ejecución y verificación** — GitHub no acepta contraseña de cuenta para Git/API: se requiere un PAT con scope `repo`. Procedimiento preparado en `..\publicar-github.ps1` (crea el repo público vía API, agrega `origin`, hace push y compara el HEAD con `origin/main`). |
-| Verificación del push | Se declarará verificado únicamente cuando `git ls-remote origin refs/heads/main` coincida con el HEAD local (`git rev-parse HEAD`), o vía API `https://api.github.com/repos/kimaleja/cafeorigen/branches`. |
-| ZIP de entrega | `..\CafeOrigen-entrega-v1.0.0.zip` — generado con `git archive HEAD` (solo archivos committeados; sin `build/`, `.gradle/`, `local.properties` ni APK). |
+| Local | ✅ Repositorio Git `main` con historia descriptiva por capas (`chore` config → `feat(core)` → `feat(auth)` → `feat(shell)` → `feat(admin)` → `feat(vendor)` → `feat(buyer)` → `feat(ui)` → `feat(firebase)` → `docs`). |
+| Archivos sensibles | ✅ Sin secretos reales: `local.properties` (ruta del SDK del equipo), `build/`, `.gradle/`, keystores, `app/google-services.json`, `.firebaserc` y `firebase/seed/serviceAccount.json` quedan excluidos por `.gitignore`. Las únicas credenciales presentes son las cuentas **demo** (mock y seed), intencionales para la evaluación (§3). |
+| Remoto | ✅ Cuenta GitHub de la estudiante: `kimaleja` — repositorio público **`CafeOrigen1`** → <https://github.com/kimaleja/CafeOrigen1>. `origin` configurado y `main` sincronizado con el remoto (`git ls-remote origin refs/heads/main` coincide con el HEAD local). |
+| Verificación del push | ✅ Contrastado con `git ls-remote origin refs/heads/main` y vía API `https://api.github.com/repos/kimaleja/CafeOrigen1/branches`. |
+| ZIP de entrega | `..\CafeOrigen-entrega-v1.0.0.zip` — generado con `git archive HEAD` (solo archivos committeados; sin `build/`, `.gradle/`, `local.properties`, credenciales ni APK). |
 
-## 18. Conclusiones
+## 19. Conclusiones
 
-1. **La arquitectura se sostiene en la práctica**: el patrón MVVM con `LiveData` fue suficiente para separar la lógica de presentación de cada rol y desarrollar pantalla por pantalla sin duplicar estado; el caso de estudio del repositorio demostró cómo la capa de datos (mock) puede sustituirse por un backend real sin tocar la UI.
+1. **La arquitectura se sostiene en la práctica**: el patrón MVVM con `LiveData` fue suficiente para separar la lógica de presentación de cada rol y desarrollar pantalla por pantalla sin duplicar estado; la integración de Firebase lo confirmó: la capa de datos cambió de fuente (mock → Auth/Firestore/Storage) conservando firmas de repositorios, ViewModels y UI.
 2. **Recursos con identidad coherente**: el sistema visual (Material 3 + Poppins + 55 drawables + 347 strings) mantiene una identidad única entre los 3 roles, y los componentes propios (`KpiCard`, `RowItem`, `BarChart`, `EmptyState`) redujeron la repetición de XML en dashboards y listas.
 3. **El ciclo de calidad funcionó**: Android Lint detectó errores reales (25× `UseAppTint`, 7× `DiffUtilEquals`, duplicados de `app:tint`) que fueron corregidos; el build limpio tras las correcciones (`clean assembleDebug` + `lintDebug` OK) evidencia el proceso de QA aplicado a la entrega.
+4. **La seguridad se diseñó por rol, no por pantalla**: las reglas de Firestore/Storage son deny-by-default y leen el rol de `users/{uid}`; un vendedor no puede tocar productos de otra finca, un comprador no puede modificar pedidos y nadie puede autoasignarse ADMIN desde el cliente.
 
 ### Limitaciones conocidas (documentadas, no errores)
-- **Sin backend**: la capa de datos es un mock en memoria; los datos del negocio se regeneran en cada arranque (por diseño, solo persiste la sesión del usuario).
+- **Datos por defecto en mock**: sin `app/google-services.json` (que no se versiona) la capa de datos es el mock en memoria y los datos se regeneran en cada arranque. Con el archivo de configuración, la app usa Firebase y persiste; el procedimiento y la verificación pendiente están en `FIREBASE_CONFIGURACION.md` §1 y §17.6.
+- **Checkout en cliente**: para validar stock sin backend, la regla de `products` permite al comprador reducir `stock`; la solución definitiva es una Cloud Function transaccional. Igual criterio para el alta de usuarios desde el panel admin (hoy con `FirebaseApp` secundaria).
 - **Pruebas de runtime parcial**: el 04/11/2026 se ejecutó una sesión en emulador (registro + auto-login, arranque del comprador, navegación por tabs) que detectó y corrigió 2 defectos reales; el checkout cruzado entre roles, el CRUD admin/vendedor, la rotación y la biometría quedan sin recorrer en device — ver `INFORME_AUDITORIA.md` §16.
 - **Pasarela demo**: no procesa pagos reales ni solicita datos bancarios de ningún tipo.
 - **Sin variantes de pantalla**: no hay `values-sw*dp` ni layouts landscape/tablet — la UI escala, pero no está afinada para pantallas grandes.

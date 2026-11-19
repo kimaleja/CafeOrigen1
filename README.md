@@ -2,7 +2,7 @@
 
 Aplicación Android nativa (Java) para la compra de café de especialidad colombiano directamente de caficultores a compradores, con trazabilidad de origen (región, variedad, proceso, altitud), panel de moderación y una marketplace de tres roles en la misma app.
 
-> Proyecto académico de entrega final. La capa de datos es un **mock en memoria** (no hay backend): las credenciales listadas abajo son datos demo incluidos a propósito en el seed de la app.
+> Proyecto académico de entrega final. La app incluye una integración completa de **Firebase (Auth + Cloud Firestore + Storage)** y funciona en dos modos: **mock en memoria** (por defecto, sin credenciales) y **Firebase real** en cuanto se agrega `app/google-services.json`. Las credenciales listadas abajo son datos demo intencionales. Ver [`FIREBASE_CONFIGURACION.md`](FIREBASE_CONFIGURACION.md).
 
 ## Tecnologías
 
@@ -12,8 +12,8 @@ Aplicación Android nativa (Java) para la compra de café de especialidad colomb
 | UI | XML + Material Components 3 (1.12.0), ViewBinding, RecyclerView, ConstraintLayout |
 | Arquitectura | MVVM por capas — `Fragment → ViewModel → Repositorio → Datos en memoria` |
 | Estado | `LiveData` observable, eventos de operación por ViewModel |
-| Datos | Mock en memoria (`MockDataProvider`) con repositorios asíncronos de demostración; carrito singleton |
-| Seguridad/UX | `androidx.biometric` (login con huella), sesión persistente con `SharedPreferences` |
+| Datos | Doble fuente: **Firebase** (Auth, Firestore, Storage — BoM 33.16.0) o **mock en memoria** (`MockDataProvider`), seleccionada automáticamente |
+| Seguridad/UX | Reglas Firestore/Storage por rol (deny-by-default), `androidx.biometric` (login con huella), sesión persistente |
 | Build | Gradle 8.7 + Android Gradle Plugin, `compileSdk 34`, `minSdk 26`, `targetSdk 34` |
 | QA | Android Lint 0 errores (informe en `INFORME_AUDITORIA.md`) |
 
@@ -27,15 +27,16 @@ app/src/main/java/com/cafeorigen/
 │                                #   RegisterFragment, PasswordRecoveryFragment
 ├── core/
 │   ├── model/                   # User, Product, Order, OrderItem, enums (Role, ProductStatus…)
-│   ├── data/                    # MockDataProvider (seed), repos por rol, SessionManager, CartRepository
-│   ├── ui/                      # Componentes reutilizables: KpiCard, RowItem, BarChart, EmptyState
+│   ├── data/                    # Repos por rol, SessionManager, CartRepository,
+│   │                            #   MockDataProvider y firebase/ (Auth, Firestore, Storage)
+│   ├── ui/                      # KpiCard, RowItem, BarChart, EmptyState, RemoteImageLoader
 │   └── util/                    # Validators (email, contraseña, campos)
 ├── admin/                       # Rol Administrador (fragment / viewModel / adapter por pantalla)
 ├── vendor/                      # Rol Vendedor
 └── buyer/                       # Rol Comprador
 ```
 
-Flujo de datos: la UI observa `LiveData` del ViewModel; el ViewModel llama al repositorio (executor + callback con latencia simulada); el repositorio consulta el mock y devuelve `Result<T>`. La navegación es manual (`FragmentManager` con `showRoot`/`openSub`) y `MainActivity` enruta el bottom-nav según el rol en sesión.
+Flujo de datos: la UI observa `LiveData` del ViewModel; el ViewModel llama al repositorio (execute + callback con `Result<T>`). El repositorio decide la fuente: si `FirebaseBootstrap.isConfigured()` es true delega en `core/data/firebase/*` (Auth/Firestore/Storage reales); si no, usa el mock con latencia simulada. La navegación es manual (`FragmentManager` con `showRoot`/`openSub`) y `MainActivity` enruta el bottom-nav según el rol en sesión.
 
 ## Roles
 
@@ -78,7 +79,7 @@ Cuando un comprador confirma la compra: la app valida existencias, crea **un ped
 3. Opción B (CLI): `./gradlew installDebug` con un dispositivo/emulador conectado.
 4. Ingresa con una de las cuentas demo de la tabla anterior. La biometría requiere huella registrada en el dispositivo (si no hay, el botón la ofrece como entrada demo).
 
-Los datos (productos, pedidos, usuarios) se regeneran en cada arranque — es un mock intencional; el estado no persiste entre sesiones (salvo la sesión del usuario logueado).
+Sin `app/google-services.json` los datos (productos, pedidos, usuarios) se regeneran en cada arranque: es el modo mock intencional. Al agregar el archivo de configuración de Firebase, la app pasa sola a persistencia real (Auth + Firestore + Storage) sin tocar el código. Pasos exactos en [`FIREBASE_CONFIGURACION.md`](FIREBASE_CONFIGURACION.md).
 
 ## Instrucciones de compilación
 
@@ -99,15 +100,34 @@ En Windows: `gradlew.bat` en vez de `./gradlew`. Si Gradle no resuelve el SDK, `
 ```
 CafeOrigen/
 ├── app/                          # Módulo de aplicación (src/main: java + res)
-├── build.gradle / settings.gradle/ gradle.properties  # Config de Gradle y módulos
+├── firebase/                     # Reglas de Firestore/Storage, índices y seed de datos
+│   ├── firestore.rules           # Seguridad por rol (deny-by-default)
+│   ├── storage.rules             # Imágenes: solo el vendedor dueño
+│   ├── firebase.json             # Configuración para Firebase CLI
+│   └── seed/                     # Script Node que carga cuentas, productos y pedidos
+├── build.gradle / settings.gradle / gradle.properties # Config de Gradle y módulos
 ├── gradlew / gradlew.bat / gradle/wrapper/            # Wrapper de Gradle (compilación reproducible)
-├── .gitignore                    # Excluye build/, .gradle/, local.properties, keystores
+├── .gitignore                    # Excluye build/, .gradle/, local.properties, keystores y google-services.json
+├── FIREBASE_CONFIGURACION.md     # Checklist de puesta en marcha y verificación real
 ├── INFORME_AUDITORIA.md          # Informe de pruebas: 15 puntos verificables
 └── README.md                     # Este documento
 ```
 
+## Modo Firebase (opcional)
+
+La app funciona sin configuración adicional en modo mock. Para persistencia real:
+
+1. Crear el proyecto en <https://console.firebase.google.com> y registrar la app con paquete `com.cafeorigen`.
+2. Descargar `google-services.json` y guardarlo en `app/` (está en `.gitignore`).
+3. Habilitar **Authentication → Email/Password**, crear **Cloud Firestore** y **Storage** en modo producción.
+4. Publicar `firebase/firestore.rules` y `firebase/storage.rules`.
+5. Opcional: `cd firebase/seed && npm install && node seed-firestore.js` para cargar los datos demo.
+6. Recompilar (`gradlew.bat clean assembleDebug`): el plugin de Google Services se aplica solo.
+
+Detalles, verificación paso a paso y matriz de pruebas de reglas en [`FIREBASE_CONFIGURACION.md`](FIREBASE_CONFIGURACION.md).
+
 ## Notas de entrega
 
-- Sin backend real: la implementación de red se limita a `Result<T>` simulado para demostrar la arquitectura reactiva.
-- Sin credenciales reales, ni claves API, ni keystore de firma en el repositorio.
+- **Doble fuente de datos**: Firebase real si existe `app/google-services.json`; mock en memoria en caso contrario (modo por defecto de esta entrega, porque las credenciales del proyecto no se versionan).
+- Sin credenciales reales, ni claves API, ni `google-services.json`, ni keystore de firma en el repositorio. Las reglas y el script de seed no contienen secretos.
 - Detalle completo de la batería de verificación (y de lo que **no** fue probado en runtime) en `INFORME_AUDITORIA.md`.

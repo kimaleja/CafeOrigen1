@@ -1,0 +1,159 @@
+rules_version = '2';
+
+// ============================================================================
+// CafeOrigen — Reglas de Cloud Firestore
+//
+// Modelo de autorización (deny-by-default):
+//   * El rol vive en users/{uid}.role y NADIE puede cambiarlo desde el cliente
+//     salvo un administrador activo (regla de update de users).
+//   * Cada vendedor solo escribe productos con vendorId == su uid.
+//   * Cada comprador solo lee sus pedidos; jamás puede modificarlos.
+//   * Los pedidos solo los cambia el vendedor dueño o un administrador.
+//   * Cualquier ruta no declarada queda denegada.
+//
+// Nota de diseño: durante el checkout el comprador descuenta stock en una
+// transacción. Para no instalar un backend, la regla de products permite al
+// comprador tocar ÚNICAMENTE el campo stock y solo para reducirlo. Un backend
+// (Cloud Function) eliminaría esa concesión; ver FIREBASE_CONFIGURACION.md.
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function role() {
+      return signedIn() ? profile().role : '';
+    }
+
+    // Cuenta activa: el borrado lógico (active = false) corta todo acceso.
+    function activeProfile() {
+      return signedIn() && profile().active == true;
+    }
+
+    function isAdmin() {
+      return activeProfile() && role() == 'ADMINISTRADOR';
+    }
+
+    function isVendor() {
+      return activeProfile() && role() == 'VENDEDOR';
+    }
+
+    function isBuyer() {
+      return activeProfile() && role() == 'COMPRADOR';
+    }
+
+    function unchanged(field) {
+      return request.resource.data[field] == resource.data[field];
+    }
+
+    // ------------------------------------------------------------------ users
+    match /users/{uid} {
+      // Cada usuario ve su perfil; el administrador ve todos.
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+
+      // Registro público: solo puede crear SU perfil, como COMPRADOR activo
+      // y con el correo de su propio token. El administrador puede provisionar
+      // cuentas con cualquier rol (proceso documentado).
+      allow create: if signedIn() && (
+        (request.auth.uid == uid
+          && request.resource.data.role == 'COMPRADOR'
+          && request.resource.data.active == true
+          && request.resource.data.email.lower() == request.auth.token.email.lower())
+        || isAdmin()
+      );
+
+      // Autoedición: nombre/teléfono, sin tocar rol, estado ni correo.
+      // El administrador puede editar todo, incluido el bloqueo lógico.
+      allow update: if (activeProfile() && request.auth.uid == uid
+          && unchanged('role')
+          && unchanged('active')
+          && request.resource.data.email.lower() == resource.data.email.lower())
+        || isAdmin();
+
+      allow delete: if isAdmin();
+    }
+
+    // --------------------------------------------------------------- products
+    match /products/{productId} {
+      // Catálogo y detalles: cualquier cuenta activa.
+      allow read: if activeProfile();
+
+      // El vendedor solo publica a su nombre y no puede autoaprobarse:
+      // nace en BORRADOR o PENDIENTE (la moderación es del administrador).
+      allow create: if isVendor()
+        && request.resource.data.vendorId == request.auth.uid
+        && request.resource.data.status in ['BORRADOR', 'PENDIENTE']
+        && request.resource.data.price is number
+        && request.resource.data.stock is number
+        && request.resource.data.stock >= 0;
+
+      allow update: if isAdmin()
+        || (isVendor()
+            && resource.data.vendorId == request.auth.uid
+            && request.resource.data.vendorId == request.auth.uid
+            && (request.resource.data.status == resource.data.status
+                || request.resource.data.status in ['BORRADOR', 'PENDIENTE']))
+        // Concesión acotada del checkout: el comprador solo baja stock.
+        || (isBuyer()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stock'])
+            && request.resource.data.stock is number
+            && request.resource.data.stock >= 0
+            && request.resource.data.stock < resource.data.stock);
+
+      allow delete: if isAdmin()
+        || (isVendor() && resource.data.vendorId == request.auth.uid);
+    }
+
+    // ----------------------------------------------------------------- orders
+    match /orders/{orderId} {
+      // Comprador dueño, vendedor dueño o administrador.
+      allow read: if activeProfile() && (
+        resource.data.buyerId == request.auth.uid
+        || resource.data.vendorId == request.auth.uid
+        || isAdmin());
+
+      // Nace del checkout del comprador, siempre POR_CONFIRMAR.
+      allow create: if isBuyer()
+        && request.resource.data.buyerId == request.auth.uid
+        && request.resource.data.status == 'POR_CONFIRMAR'
+        && request.resource.data.vendorId is string
+        && request.resource.data.total is number
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0;
+
+      // El vendedor dueño avanza el estado sin poder alterar líneas ni totales.
+      // El comprador NO tiene ninguna rama de escritura.
+      allow update: if isAdmin()
+        || (isVendor()
+            && resource.data.vendorId == request.auth.uid
+            && unchanged('buyerId')
+            && unchanged('vendorId')
+            && unchanged('total')
+            && unchanged('items')
+            && request.resource.data.status in
+               ['CONFIRMADO', 'DESPACHADO', 'ENTREGADO', 'CANCELADO']);
+
+      // Los pedidos no se borran: se cancelan (histórico contable).
+      allow delete: if false;
+    }
+
+    // ------------------------------------------------------------------ carts
+    match /carts/{uid} {
+      allow read, write: if activeProfile() && request.auth.uid == uid;
+    }
+
+    // ------------------------------------------------------------- categories
+    // Catálogo de categorías: lectura para cuentas activas, escritura admin.
+    match /categories/{categoryId} {
+      allow read: if activeProfile();
+      allow write: if isAdmin();
+    }
+  }
+}

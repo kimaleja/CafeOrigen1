@@ -1,0 +1,13 @@
+{
+  "name": "cafeorigen-seed",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Carga inicial de usuarios, productos y pedidos demo de CafeOrigen en Firestore",
+  "main": "seed-firestore.js",
+  "scripts": {
+    "seed": "node seed-firestore.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

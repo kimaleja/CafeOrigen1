@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// ============================================================================
+// CafeOrigen — Reglas de Firebase Storage
+//
+// Las imágenes de producto se guardan en:
+//   products/{vendorId}/{productId}.jpg
+//
+// Solo el vendedor dueño (uid == vendorId y rol VENDEDOR activo) puede subir
+// o reemplazar la imagen de sus productos. La lectura requiere sesión (el
+// catálogo no es anónimo). Cualquier otra ruta queda denegada.
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isActiveVendor() {
+      return signedIn()
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid))
+             .data.active == true
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid))
+             .data.role == 'VENDEDOR';
+    }
+
+    match /products/{vendorId}/{fileName} {
+      allow read: if signedIn();
+
+      allow write: if isActiveVendor()
+        && request.auth.uid == vendorId
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if signedIn() && request.auth.uid == vendorId;
+    }
+
+    // Todo lo no declarado se rechaza.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
