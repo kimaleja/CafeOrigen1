@@ -241,6 +241,10 @@ public class MainActivity extends AppCompatActivity {
 
     /** Abre sub-pantallas (formulario, reporte) manteniendo el tab actual. */
     public void openSub(Fragment fragment) {
+        if (!canAccess(fragment)) {
+            denyAccess();
+            return;
+        }
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.main_fragment_container, fragment)
@@ -255,22 +259,65 @@ public class MainActivity extends AppCompatActivity {
 
     /** Salto programático al tab de productos (alerta de stock del panel V1). */
     public void openRootProducts() {
+        Role role = SessionManager.get(this).getRole();
+        if (role != Role.VENDEDOR && role != Role.ADMINISTRADOR) {
+            denyAccess();
+            return;
+        }
         selectTab(R.id.nav_productos);
     }
 
     /** Catálogo del comprador prefiltrado por categoría (C1 → C2). */
     public void openRootCatalog(ProductCategory category) {
+        if (SessionManager.get(this).getRole() != Role.COMPRADOR) {
+            denyAccess();
+            return;
+        }
         showRoot(BuyerCatalogFragment.newInstance(category), R.id.nav_catalogo);
     }
 
     /** Carrito del comprador (acciones "Ver carrito"). */
     public void openRootCart() {
+        if (SessionManager.get(this).getRole() != Role.COMPRADOR) {
+            denyAccess();
+            return;
+        }
         selectTab(R.id.nav_carrito);
     }
 
     /** Historial del comprador (tras confirmar la compra). */
     public void openRootOrders() {
+        if (SessionManager.get(this).getRole() != Role.COMPRADOR) {
+            denyAccess();
+            return;
+        }
         selectTab(R.id.nav_pedidos);
+    }
+
+    /**
+     * Control de acceso por rol en el punto de navegación (T6).
+     * Cada paquete de pantallas pertenece a un rol; cualquier intento de abrir
+     * una pantalla de otro rol se rechaza aquí aunque la llamada venga de código.
+     */
+    private boolean canAccess(Fragment fragment) {
+        Package screenPackage = fragment.getClass().getPackage();
+        String pkg = screenPackage == null ? "" : screenPackage.getName();
+        Role role = SessionManager.get(this).getRole();
+        if (pkg.equals("com.cafeorigen.buyer")) {
+            return role == Role.COMPRADOR;
+        }
+        if (pkg.equals("com.cafeorigen.vendor")) {
+            return role == Role.VENDEDOR;
+        }
+        if (pkg.equals("com.cafeorigen.admin")) {
+            return role == Role.ADMINISTRADOR;
+        }
+        // Pantallas transversales (auth/core) no están restringidas por rol.
+        return true;
+    }
+
+    private void denyAccess() {
+        Snackbar.make(binding.getRoot(), R.string.access_denied_role, Snackbar.LENGTH_LONG).show();
     }
 
     /** Cierre de sesión pedido desde el perfil (V8), con confirmación. */
@@ -282,13 +329,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindToolbarActions() {
         binding.mainToolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_logout) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_logout) {
                 confirmLogout();
+                return true;
+            }
+            if (itemId == R.id.action_cart) {
+                // openRootCart aplica el control de acceso por rol.
+                openRootCart();
+                return true;
+            }
+            if (itemId == R.id.action_search) {
+                openRoleList();
+                return true;
+            }
+            if (itemId == R.id.action_notifications) {
+                Snackbar.make(binding.getRoot(), R.string.notifications_empty,
+                        Snackbar.LENGTH_SHORT).show();
                 return true;
             }
             showModuleInProgress(String.valueOf(item.getTitle()));
             return true;
         });
+    }
+
+    /** El icono de búsqueda lleva a la pantalla de listado propia de cada rol. */
+    private void openRoleList() {
+        Role role = SessionManager.get(this).getRole();
+        if (role == Role.COMPRADOR) {
+            showRoot(BuyerCatalogFragment.newInstance(null), R.id.nav_catalogo);
+        } else if (role == Role.VENDEDOR) {
+            showRoot(new VendorProductsFragment(), R.id.nav_productos);
+        } else if (role == Role.ADMINISTRADOR) {
+            showRoot(new AdminProductListFragment(), R.id.nav_productos);
+        } else {
+            denyAccess();
+        }
     }
 
     private void showModuleInProgress(String title) {
