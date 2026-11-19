@@ -219,8 +219,11 @@ Modelo de navegación (`MainActivity`):
 - `showRoot(fragment, navId)`: reemplaza el fragment del contenedor (nivel superior, sin `addToBackStack`) y sincroniza la selección del tab actual.
 - `openSub(fragment)`: apila encima (`addToBackStack`), para pantallas de detalle/formulario (detalle de producto, checkout, formularios, etc.).
 - Tres handlers de bottom-nav **aislados por rol**: `handleAdminNav`, `handleVendorNav`, `handleBuyerNav`. Cada uno **primero valida** `SessionManager.getRole()` y solo acepta los ids de su propio menú: un tab de otro rol no llega al handler de un rol distinto (defensa ante cambios de sesión en caliente).
-- Saltos programáticos: `openRootCatalog(category)` (prefiltro C1→C2), `openRootCart()` ("Ver carrito" en snackbar), `openRootOrders()` ("Ver mis pedidos" del checkout), `openRootProducts()` (alerta de stock bajo del panel del vendedor) y `requestLogout()` (confirmación de cierre de sesión).
+- **Guarda transversal por paquete** en `canAccess(Fragment)`: antes de abrir cualquier pantalla se compara el paquete del fragment (`buyer`/`vendor`/`admin`) con el rol de la sesión, aunque la llamada venga de código. Si no coincide, se deniega con snackbar (`access_denied_role`) y no se navega. Aplica a `openSub()` y a los saltos programáticos.
+- **Barra superior funcional por rol**: buscar abre el listado del rol (catálogo, productos del vendedor o moderación del admin), carrito respeta el control de acceso y notificaciones muestra el estado vacío real (`notifications_empty`), sin pantallas simuladas.
+- Saltos programáticos: `openRootCatalog(category)` (prefiltro C1→C2), `openRootCart()` ("Ver carrito"), `openRootOrders()` ("Ver mis pedidos" del checkout), `openRootProducts()` (alerta de stock bajo del panel del vendedor) y `requestLogout()` (confirmación de cierre de sesión); todos verifican rol.
 - `popBackStack()` en las `openSub` (los formularios y el detalle regresan al fragment que los abrió).
+- En autenticación, el botón **atrás** del sistema regresa a Login desde Registro/Recuperación y sale del flujo desde Login (`OnBackPressedCallback` en `AuthActivity`).
 
 ## 14. Autenticación biométrica
 
@@ -241,10 +244,26 @@ switch (canAuthenticate) {
     case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
         // Estados no compatibles: continuar por la vía convencional
         break;
+    case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
+        // El equipo exige actualización de seguridad
+        break;
 }
 ```
 
-Decisiones de diseño: en `showBiometricPrompt()` se exige **una sesión previa local con contraseña** (`SessionManager.getLastUserId()`); al autenticar con éxito se restaura el último usuario real consultándolo en el mock — **nunca se simula huella** ni se usa biometría para "inventar" una sesión (sin CryptoObject en este alcance). El executor es `ContextCompat.getMainExecutor(requireContext())` y ante `onAuthenticationError` la app regresa sin bloqueos al login convencional. El permiso `USE_BIOMETRIC` lo declara el propia librería `androidx.biometric` (se fusiona automáticamente al manifest en el build).
+Estados del `BiometricPrompt.AuthenticationCallback` cubiertos:
+
+| Callback / código | Comportamiento |
+|---|---|
+| `onAuthenticationSucceeded` | Restaura el último usuario **solo si hay sesión previa real** (mock) o sesión vigente del SDK (Firebase); luego entra a `MainActivity` |
+| `onAuthenticationFailed` | Aviso "huella no reconocida"; el diálogo del sistema sigue abierto para reintentar |
+| `ERROR_NEGATIVE_BUTTON` | "Usar contraseña": cierra el diálogo y deja el login convencional listo |
+| `ERROR_USER_CANCELED` / `ERROR_CANCELED` | Aviso de cancelación; permanece en login |
+| `ERROR_LOCKOUT` | Aviso de bloqueo temporal (30 s) y alternativa con contraseña |
+| `ERROR_LOCKOUT_PERMANENT` | Aviso de bloqueo permanente: desbloquear el dispositivo o usar contraseña |
+| `ERROR_NO_BIOMETRICS` | Deriva al mensaje de huella no registrada |
+| Otros (`HW_UNAVAILABLE`, timeout…) | Mensaje del sistema, sin bloquear el login |
+
+Decisiones de diseño: en `showBiometricPrompt()` se exige **una sesión previa local con contraseña** (`SessionManager.getLastUserId()`); al autenticar con éxito se restaura el último usuario real consultándolo en el mock — **nunca se simula huella** ni se usa biometría para "inventar" una sesión (sin CryptoObject en este alcance). En modo Firebase se exige además que el SDK conserve sesión (`hasSession()`); si el token expiró se pide correo y contraseña. El executor es `ContextCompat.getMainExecutor(requireContext())` y ante cualquier error la app regresa sin bloqueos al login convencional. El permiso `USE_BIOMETRIC` lo declara la propia librería `androidx.biometric` (se fusiona automáticamente al manifest en el build).
 
 ## 15. Pruebas realizadas
 
@@ -266,6 +285,10 @@ Metodología honesta: **verificación estática + compilación + Lint**, más la
 | **Navegación por tabs de los 3 roles (runtime)** | `adb shell input tap` + `uiautomator dump` | ✅ selección y fragmentos correctos, proceso estable, 0 crashes |
 | **Moderación admin (runtime)** | Tap "Aprobar" en Pendientes | ✅ café pasa de Pendientes a Activos |
 | **Transición de pedido vendedor (runtime)** | Detalle → "Confirmar" | ✅ badge Por confirmar → Confirmado propagado a la lista |
+| **Biometría sin huella registrada (runtime)** | Emulador API 37, tap "Ingresar con huella"; `logcat` de `BiometricService` | ✅ estado `NONE_ENROLLED` detectado, aviso al usuario y login convencional disponible (sin simular huella) |
+| **Atrás del sistema en autenticación (runtime)** | Recuperación → botón atrás | ✅ regresa al Login en lugar de cerrar la app |
+| **Menús por rol (runtime)** | Login comprador y vendedor + `uiautomator dump` | ✅ comprador 5 tabs, vendedor 4 tabs; ningún tab de otro rol presente |
+| **Acciones del toolbar (runtime)** | Overflow "Ver carrito" como vendedor, buscar, notificaciones | ✅ acceso denegado con snackbar; buscar abre el listado del rol; notificaciones muestra estado vacío real |
 | Compilación completa con Firebase | `gradle :app:assembleDebug` (18/11/2026) | ✅ BUILD SUCCESSFUL, modo mock por defecto |
 | Conexión real a Firebase | Requiere `google-services.json` del proyecto | ⚠️ pendiente (`FIREBASE_CONFIGURACION.md` §3 y §6) |
 | Checkout completo cross-role, CRUD admin/vendedor, rotación, biometría | — | ❌ runtime pendiente ([ver informe](INFORME_AUDITORIA.md) §16) |
@@ -279,7 +302,7 @@ Metodología honesta: **verificación estática + compilación + Lint**, más la
 | Dato | Valor |
 |---|---|
 | **Ruta exacta** | `C:\Users\kaval\Documents\Default Project\CafeOrigen\app\build\outputs\apk\debug\app-debug.apk` |
-| Tamaño | 11.647.003 bytes (≈ 11,6 MB con los SDK de Firebase incluidos) |
+| Tamaño | 11.829.511 bytes (≈ 11,8 MB con los SDK de Firebase incluidos) |
 | applicationId | `com.cafeorigen` |
 | versionName / versionCode | `1.0.0` / `1` |
 | minSdk | 26 |

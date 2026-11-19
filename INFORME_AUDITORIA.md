@@ -184,3 +184,40 @@ contra el proyecto) queda preparada y documentada paso a paso en
 `FIREBASE_CONFIGURACION.md` (§3, §6 y §7 con 20 casos de reglas), pero no puede
 declararse ejecutada sin el archivo de configuración de la cuenta dueña del
 proyecto.
+
+---
+
+## 20. Adenda — Funcionalidades transversales (19/11/2026)
+
+Auditoría de los seis bloques transversales solicitados (splash, login,
+recuperación, biometría, menú principal y control de acceso) sobre el código
+existente. Se cerraron cuatro huecos reales detectados:
+
+| # | Hallazgo | Corrección |
+|---|---|---|
+| 1 | El botón atrás del sistema en Registro/Recuperación cerraba la app | `OnBackPressedCallback` en `AuthActivity`: vuelve al Login; en Login sale del flujo |
+| 2 | Biometría solo manejaba éxito, cancelación y errores genéricos | Se agregaron `onAuthenticationFailed` y los estados `LOCKOUT`, `LOCKOUT_PERMANENT`, `NO_BIOMETRICS`, `SECURITY_UPDATE_REQUIRED` y sesión Firebase expirada |
+| 3 | Navegación programática pública sin verificación de rol | `canAccess(Fragment)` compara el paquete de la pantalla con el rol de la sesión; `openSub` y los saltos (`openRootCart/Catalog/Orders/Products`) deniegan con snackbar |
+| 4 | Iconos del toolbar (buscar, carrito, notificaciones) mostraban "módulo en progreso" | Buscar abre el listado del rol, carrito respeta el control de acceso y notificaciones muestra su estado vacío real |
+
+Además: guarda de doble navegación en el login (LiveData reemitido) y limpieza
+del `Handler` del splash en `onDestroy`.
+
+Verificación en emulador API 37 (`adb`, `uiautomator`, `screencap`, `logcat`):
+
+| Caso | Resultado |
+|---|---|
+| Splash → Login sin sesión / → MainActivity con sesión | ✅ |
+| Login comprador y vendedor con validaciones | ✅ |
+| Recuperación: paso 1 → paso 2, correo inválido y atrás al Login | ✅ |
+| Biometría sin huella registrada (`NONE_ENROLLED`) | ✅ aviso + vía convencional (`BiometricService: hasEnrollments: false`) |
+| Menú por rol | ✅ 5 tabs comprador, 4 tabs vendedor, sin tabs ajenos |
+| Control de acceso: "Ver carrito" como vendedor | ✅ snackbar "Tu rol no tiene permiso…" |
+| Toolbar: buscar por rol y notificaciones vacías | ✅ |
+| Compilación tras los cambios | ✅ `assembleDebug` ExitCode 0 · APK 11.829.511 bytes |
+
+**No verificado:** autenticación con huella **registrada** (el AVD no tiene
+enrolamiento y enrolar exige interacción en Ajustes) y bloqueo por intentos
+(`LOCKOUT`), que requieren un dispositivo con huella. El código de esos caminos
+usa exclusivamente las APIs oficiales y se validó por revisión; no se simula la
+autenticación en ningún caso.
